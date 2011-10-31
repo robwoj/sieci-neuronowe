@@ -1,0 +1,20 @@
+﻿<Window x:Class="Perceptron2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="444" Width="576" Closing="Window_Closing">
+    <Grid>
+        <Canvas Height="200" HorizontalAlignment="Left" Margin="12,12,0,0" Name="canvas" VerticalAlignment="Top" Width="200" MouseLeftButtonDown="canvas_MouseLeftButtonDown" MouseRightButtonDown="canvas_MouseRightButtonDown" IsManipulationEnabled="False" IsItemsHost="False" Focusable="False" IsHitTestVisible="True" Background="LightGray" MouseMove="canvas_MouseMove">
+        </Canvas>
+        <TextBox Margin="218,82,12,12" Name="console" IsManipulationEnabled="True" VerticalScrollBarVisibility="Auto" />
+        <Button Content="Uczenie kieszonkowe" Height="27" HorizontalAlignment="Left" Margin="13,218,0,0" Name="pocketButton" VerticalAlignment="Top" Width="200" Click="pocketButton_Click" />
+        <Button Content="Wyczyść" Height="23" HorizontalAlignment="Left" Margin="13,309,0,0" Name="reset" VerticalAlignment="Top" Width="200" Click="reset_Click" />
+        <Slider Height="23" HorizontalAlignment="Left" Margin="68,251,0,0" Name="liczbaScroll" VerticalAlignment="Top" Width="144" ValueChanged="liczbaScroll_ValueChanged" Maximum="1000000" LargeChange="1000" SmallChange="10" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="13,251,0,0" Name="liczbaText" VerticalAlignment="Top" Width="49" IsReadOnly="False" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="13,280,0,0" Name="stalaText" VerticalAlignment="Top" Width="49" IsReadOnly="False"  />
+        <Slider Height="23" HorizontalAlignment="Left" Margin="68,280,0,0" Name="stalaScroll" VerticalAlignment="Top" Width="144" ValueChanged="stalaScroll_ValueChanged" LargeChange="0.1" Maximum="1" />
+        <Button Content="Utwórz sieć neuronową" Height="23" HorizontalAlignment="Left" Margin="12,338,0,0" Name="networkButton" VerticalAlignment="Top" Width="201" Click="networkButton_Click" />
+        <Rectangle Height="64" Margin="218,12,12,0" Name="classRect" Stroke="Black" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="151,370,0,0" Name="liczbaPerceptronowText" VerticalAlignment="Top" Width="61" IsReadOnly="True" Text="0" />
+        <Label Content="Liczba perceptronów:" Height="23" HorizontalAlignment="Left" Margin="13,370,0,0" Name="liczbaPerceptronowLabel" VerticalAlignment="Top" Width="132" />
+    </Grid>
+</Window>
