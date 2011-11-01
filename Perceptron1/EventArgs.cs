@@ -50,7 +50,7 @@ namespace Perceptron1
     /// <summary>
     /// Klasa reprezentująca argumenty zdarzenia NetworkEvent
     /// </summary>
-    public class EventArgs : EventArgs
+    public class NetworkEventArgs : EventArgs
     {
         private MLPNetwork network;
         public MLPNetwork Network
@@ -61,9 +61,13 @@ namespace Perceptron1
             }
         }
 
-        public EventArgs(MLPNetwork net)
+        public NetworkEventArgs(MLPNetwork net)
         {
             network = net;
         }
     }
+
+    public delegate void NetworkEvent(object sender, NetworkEventArgs e);
+    public delegate void PerceptronEvent(object sender, PerceptronEventArgs e);
+    public delegate void LayerEvent(object sender, LayerEventArgs e);
 }

@@ -93,7 +93,7 @@ namespace Perceptron1
             while (verify() == false); // Weryfikuje sieć
 
             // Wywołuje zdarzenie utworzenia sieci
-            if (OnNetworkCreated != null) OnNetworkCreated(this, new EventArgs(this));
+            if (OnNetworkCreated != null) OnNetworkCreated(this, new NetworkEventArgs(this));
 
         }
 

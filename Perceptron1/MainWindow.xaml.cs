@@ -209,7 +209,7 @@ namespace Perceptron2
         /// <summary>
         /// Zdarzenie przechwytywane w momencie utworzenia sieci.
         /// </summary>
-        public void networkCreated(object sender, EventArgs e)
+        public void networkCreated(object sender, NetworkEventArgs e)
         {
             isNetworkCreated = true;
 
