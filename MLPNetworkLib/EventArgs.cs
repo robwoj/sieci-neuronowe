@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Perceptron1
+namespace MLPNetworkLib
 {
     /// <summary>
     /// Klasa reprezentująca argumenty zdarzenia LayerEvent

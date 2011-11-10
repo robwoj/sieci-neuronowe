@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 using Perceptron1;
 using PerceptronLib;
 using System.Threading;
+using MLPNetworkLib;
 
 namespace Perceptron2
 {

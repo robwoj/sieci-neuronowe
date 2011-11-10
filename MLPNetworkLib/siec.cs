@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Threading;
 using PerceptronLib;
 
-namespace Perceptron1
+namespace MLPNetworkLib
 {
     /// <summary>
     /// Sieć perceptronów złożona z warstw o jednakowym wejściu.

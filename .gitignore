@@ -1,10 +1,10 @@
 
-Perceptron1/bin/
-Perceptron1/obj/
 TestResults/
 TestyJednostkowe/bin/
 TestyJednostkowe/obj/
-Perceptron1.suo
-*bin/
+bin/
 obj/
 *.old
+*.suo
+*.exe
+*.obj

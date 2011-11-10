@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using PerceptronLib;
 
-namespace Perceptron1
+namespace MLPNetworkLib
 {
 
     /// <summary>

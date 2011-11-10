@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Perceptron1</RootNamespace>
-    <AssemblyName>Perceptron1</AssemblyName>
+    <AssemblyName>PerceptronLearning</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -57,15 +57,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Classification.cs" />
+    <None Include="Classification.cs.old" />
     <Compile Include="drawLine.cs" />
-    <Compile Include="EventArgs.cs" />
-    <None Include="LearningExample.cs.old" />
-    <None Include="Perceptron.cs.old" />
-    <Compile Include="siec.cs" />
-    <None Include="SizeException.cs.old" />
-    <Compile Include="UniqueLayer.cs" />
-    <None Include="vector.cs.old" />
+    <None Include="EventArgs.cs.old" />
+    <None Include="siec.cs.old" />
+    <None Include="UniqueLayer.cs.old" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -105,6 +101,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MLPNetworkLib\MLPNetworkLib.csproj">
+      <Project>{B59F4BC9-5927-4C4B-A845-37A9FA2CBE3A}</Project>
+      <Name>MLPNetworkLib</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Perceptron\PerceptronLib.csproj">
       <Project>{2E87769C-B334-4188-9A08-51A30E743686}</Project>
       <Name>PerceptronLib</Name>
