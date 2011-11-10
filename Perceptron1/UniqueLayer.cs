@@ -99,7 +99,7 @@ namespace Perceptron1
             foreach (LearningExample e in examples)
             {
                 Vector v = compute(e);
-                nextExamples.Add(new LearningExample(v, e.ExpectedValue));
+                nextExamples.Add(new LearningExample(v, e.ExpectedDoubleValue));
             }
         }
 
@@ -210,10 +210,10 @@ namespace Perceptron1
                     bool containsDifferentClass = false;
                     // Bierze pierwszą wartość oczekiwaną i sprawdza kolejno wszstkie elementy
                     // Jeśli znajdzie się jeden przykład z różnych klas - przerywa pętlę
-                    double expectedClass = dict[c][0].ExpectedValue;
+                    double expectedClass = dict[c][0].ExpectedDoubleValue;
                     for (int i = 0; i < dict[c].Count; i++)
                     {
-                        if (expectedClass != dict[c][i].ExpectedValue)
+                        if (expectedClass != dict[c][i].ExpectedDoubleValue)
                         {
                             containsDifferentClass = true;
                             break;

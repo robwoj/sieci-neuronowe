@@ -110,7 +110,7 @@ namespace Perceptron1
                 LearningExample example = examples[r.Next(count)];
 
                 // Oblicza błąd
-                double error = example.ExpectedValue - function(example.Example);
+                double error = example.ExpectedDoubleValue - function(example.Example);
 
                 if (error == 0)
                 {
@@ -158,7 +158,7 @@ namespace Perceptron1
             {
 
                 // Jeśli wartość oczekiwana jest równa wartości obliczonej, zwiększa licznik
-                if(e.ExpectedValue == function(e.Example)) good++;
+                if(e.ExpectedDoubleValue == function(e.Example)) good++;
             }
 
             return good;

@@ -14,9 +14,17 @@ namespace Perceptron1
         private Vector v;
 
         // Wartość oczekiwana
-        private double expectedValue;
+        private Vector expectedValue;
 
         public LearningExample(Vector example, double expectedValue)
+        {
+            v = example;
+            Vector expectedVector = new Vector();
+            expectedVector[0] = expectedValue;
+            this.expectedValue = expectedVector;
+        }
+
+        public LearningExample(Vector example, Vector expectedValue)
         {
             v = example;
             this.expectedValue = expectedValue;
@@ -34,9 +42,21 @@ namespace Perceptron1
         }
 
         /// <summary>
-        /// Zwraca wartość oczekiwaną
+        /// Zwraca wartość oczekiwaną jako liczbę typu double
+        /// Ma to sens, jeśli oczekujemy jedynie wartości liczbowych jako wyniku
         /// </summary>
-        public double ExpectedValue
+        public double ExpectedDoubleValue
+        {
+            get
+            {
+                return expectedValue[0];
+            }
+        }
+
+        /// <summary>
+        /// Zwraca wartość oczekiwaną przykładu w postaci wektora
+        /// </summary>
+        public Vector ExpectedValue
         {
             get
             {

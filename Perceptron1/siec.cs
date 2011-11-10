@@ -112,7 +112,7 @@ namespace Perceptron1
                 // Oblicza klasyfikacje kolejno wszystkich warstw
                 for (int i = 0; i < layers.Count; i++)
                 {
-                    newExample = new LearningExample(layers[i].compute(newExample), newExample.ExpectedValue);
+                    newExample = new LearningExample(layers[i].compute(newExample), newExample.ExpectedDoubleValue);
                 }
 
                 // Zwrócić wartość true możemy tylko wtedy, gdy ostatnia warstwa zawiera
@@ -123,7 +123,7 @@ namespace Perceptron1
                 }
                 
                 // Klasyfikacja ostatniego perceptronu zgadza się z wartością oczekiwaną
-                if (newExample.Example[1] != newExample.ExpectedValue) return false;
+                if (newExample.Example[1] != newExample.ExpectedDoubleValue) return false;
             }
 
             return true;
@@ -164,7 +164,7 @@ namespace Perceptron1
             // Przechodzi kolejno przez wszystkie warstwy sieci
             for (int i = 0; i < layers.Count; i++)
             {
-                newExample = new LearningExample(layers[i].compute(newExample), example.ExpectedValue);
+                newExample = new LearningExample(layers[i].compute(newExample), example.ExpectedDoubleValue);
 
             }
 

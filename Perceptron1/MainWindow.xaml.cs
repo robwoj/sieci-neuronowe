@@ -237,7 +237,7 @@ namespace Perceptron2
             foreach (LearningExample l in learningExamples)
             {
                 Dispatcher.Invoke(printFDel, l.Example.ToString() + " => " + network.classify(l) +
-                    " (Wartość oczekiwana: " + l.ExpectedValue + ")");
+                    " (Wartość oczekiwana: " + l.ExpectedDoubleValue + ")");
             }
         }
 
