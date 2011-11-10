@@ -85,6 +85,7 @@ namespace TestyJednostkowe
             int actual;
             actual = target.Dimension;
             Assert.AreEqual(actual, target.Dimension);
+            Assert.AreEqual(actual, 45);
         }
 
         /// <summary>
