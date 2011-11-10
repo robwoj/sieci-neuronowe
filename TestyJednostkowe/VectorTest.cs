@@ -1,7 +1,6 @@
 ﻿using Perceptron1;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using Perceptron1;
 
 namespace TestyJednostkowe
 {
@@ -77,7 +76,7 @@ namespace TestyJednostkowe
             {
                 target = new Vector(dimension);
             }
-            catch (SizeException se)
+            catch (SizeException)
             {
                 Console.WriteLine("Zrzucenie wyjątku w przypadku zerowego wymiaru - OK");
             }

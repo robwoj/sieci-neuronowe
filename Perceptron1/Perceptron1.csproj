@@ -60,6 +60,7 @@
     <Compile Include="Classification.cs" />
     <Compile Include="drawLine.cs" />
     <Compile Include="EventArgs.cs" />
+    <Compile Include="LearningExample.cs" />
     <Compile Include="Perceptron.cs" />
     <Compile Include="siec.cs" />
     <Compile Include="SizeException.cs" />
