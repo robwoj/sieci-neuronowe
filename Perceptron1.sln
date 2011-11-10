@@ -3,14 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Perceptron1", "Perceptron1\Perceptron1.csproj", "{DFEAEC4C-C156-4F88-A859-769BC63D7436}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestyJednostkowe", "TestyJednostkowe\TestyJednostkowe.csproj", "{CCF1C64A-B4E7-40EE-97E4-A2871B4ED58C}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E423B3BA-A3BE-42E7-B12A-6E64BE82CA12}"
 	ProjectSection(SolutionItems) = preProject
 		Local.testsettings = Local.testsettings
 		Perceptron1.vsmdi = Perceptron1.vsmdi
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
+		TestyJednostkowe\VectorTest.cs = TestyJednostkowe\VectorTest.cs
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerceptronLib", "Perceptron\PerceptronLib.csproj", "{2E87769C-B334-4188-9A08-51A30E743686}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerceptronLibTests", "PerceptronLibTests\PerceptronLibTests.csproj", "{4D6DA63C-62B8-4560-86FA-0AA920D573FC}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -35,16 +38,26 @@ Global
 		{DFEAEC4C-C156-4F88-A859-769BC63D7436}.Release|Mixed Platforms.Build.0 = Release|x86
 		{DFEAEC4C-C156-4F88-A859-769BC63D7436}.Release|x86.ActiveCfg = Release|x86
 		{DFEAEC4C-C156-4F88-A859-769BC63D7436}.Release|x86.Build.0 = Release|x86
-		{CCF1C64A-B4E7-40EE-97E4-A2871B4ED58C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CCF1C64A-B4E7-40EE-97E4-A2871B4ED58C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CCF1C64A-B4E7-40EE-97E4-A2871B4ED58C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{CCF1C64A-B4E7-40EE-97E4-A2871B4ED58C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{CCF1C64A-B4E7-40EE-97E4-A2871B4ED58C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{CCF1C64A-B4E7-40EE-97E4-A2871B4ED58C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CCF1C64A-B4E7-40EE-97E4-A2871B4ED58C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CCF1C64A-B4E7-40EE-97E4-A2871B4ED58C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{CCF1C64A-B4E7-40EE-97E4-A2871B4ED58C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{CCF1C64A-B4E7-40EE-97E4-A2871B4ED58C}.Release|x86.ActiveCfg = Release|Any CPU
+		{2E87769C-B334-4188-9A08-51A30E743686}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E87769C-B334-4188-9A08-51A30E743686}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E87769C-B334-4188-9A08-51A30E743686}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2E87769C-B334-4188-9A08-51A30E743686}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2E87769C-B334-4188-9A08-51A30E743686}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2E87769C-B334-4188-9A08-51A30E743686}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E87769C-B334-4188-9A08-51A30E743686}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E87769C-B334-4188-9A08-51A30E743686}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2E87769C-B334-4188-9A08-51A30E743686}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2E87769C-B334-4188-9A08-51A30E743686}.Release|x86.ActiveCfg = Release|Any CPU
+		{4D6DA63C-62B8-4560-86FA-0AA920D573FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D6DA63C-62B8-4560-86FA-0AA920D573FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D6DA63C-62B8-4560-86FA-0AA920D573FC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4D6DA63C-62B8-4560-86FA-0AA920D573FC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4D6DA63C-62B8-4560-86FA-0AA920D573FC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4D6DA63C-62B8-4560-86FA-0AA920D573FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D6DA63C-62B8-4560-86FA-0AA920D573FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D6DA63C-62B8-4560-86FA-0AA920D573FC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4D6DA63C-62B8-4560-86FA-0AA920D573FC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4D6DA63C-62B8-4560-86FA-0AA920D573FC}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

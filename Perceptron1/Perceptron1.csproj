@@ -60,12 +60,12 @@
     <Compile Include="Classification.cs" />
     <Compile Include="drawLine.cs" />
     <Compile Include="EventArgs.cs" />
-    <Compile Include="LearningExample.cs" />
-    <Compile Include="Perceptron.cs" />
+    <None Include="LearningExample.cs.old" />
+    <None Include="Perceptron.cs.old" />
     <Compile Include="siec.cs" />
-    <Compile Include="SizeException.cs" />
+    <None Include="SizeException.cs.old" />
     <Compile Include="UniqueLayer.cs" />
-    <Compile Include="vector.cs" />
+    <None Include="vector.cs.old" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -103,6 +103,12 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Perceptron\PerceptronLib.csproj">
+      <Project>{2E87769C-B334-4188-9A08-51A30E743686}</Project>
+      <Name>PerceptronLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

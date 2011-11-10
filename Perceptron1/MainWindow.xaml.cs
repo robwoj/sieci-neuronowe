@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Perceptron1;
+using PerceptronLib;
 using System.Threading;
 
 namespace Perceptron2
@@ -94,7 +95,7 @@ namespace Perceptron2
         private void addLearningExample(Point p, double exClass)
         {
             // Tworzy nowy wektor
-            Perceptron1.Vector v = new Perceptron1.Vector(3);
+            PerceptronLib.Vector v = new PerceptronLib.Vector(3);
             v[0] = 1.0F;
             v[1] = p.X;
             v[2] = p.Y;
@@ -304,7 +305,7 @@ namespace Perceptron2
                 Point p = e.GetPosition(canvas);
 
                 // Tworzy wektor przeznaczony do przeliczenia
-                Perceptron1.Vector v = new Perceptron1.Vector(3);
+                PerceptronLib.Vector v = new PerceptronLib.Vector(3);
                 v[0] = 1;
                 v[1] = p.X - 100;
                 v[2] = p.Y - 100;

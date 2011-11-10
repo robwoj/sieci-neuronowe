@@ -5,3 +5,6 @@ TestResults/
 TestyJednostkowe/bin/
 TestyJednostkowe/obj/
 Perceptron1.suo
+*bin/
+obj/
+*.old

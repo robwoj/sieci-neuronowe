@@ -26,26 +26,6 @@ namespace Perceptron1
         }
     }
 
-    /// <summary>
-    /// Klasa reprezentująca argumenty zdarzenia PerceptronEvent
-    /// </summary>
-    public class PerceptronEventArgs : EventArgs
-    {
-        private Perceptron perceptron;
-
-        public Perceptron Perceptron
-        {
-            get
-            {
-                return perceptron;
-            }
-        }
-
-        public PerceptronEventArgs(Perceptron p)
-        {
-            perceptron = p;
-        }
-    }
 
     /// <summary>
     /// Klasa reprezentująca argumenty zdarzenia NetworkEvent
@@ -68,6 +48,5 @@ namespace Perceptron1
     }
 
     public delegate void NetworkEvent(object sender, NetworkEventArgs e);
-    public delegate void PerceptronEvent(object sender, PerceptronEventArgs e);
     public delegate void LayerEvent(object sender, LayerEventArgs e);
 }
