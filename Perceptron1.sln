@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerceptronLibTests", "Perce
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLPNetworkLib", "MLPNetworkLib\MLPNetworkLib.csproj", "{B59F4BC9-5927-4C4B-A845-37A9FA2CBE3A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropagacjaWsteczna", "PropagacjaWsteczna\PropagacjaWsteczna.csproj", "{88E29E97-3BE2-4EA1-8270-813A35DAD5F6}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Perceptron1.vsmdi
@@ -70,6 +72,16 @@ Global
 		{B59F4BC9-5927-4C4B-A845-37A9FA2CBE3A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B59F4BC9-5927-4C4B-A845-37A9FA2CBE3A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B59F4BC9-5927-4C4B-A845-37A9FA2CBE3A}.Release|x86.ActiveCfg = Release|Any CPU
+		{88E29E97-3BE2-4EA1-8270-813A35DAD5F6}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{88E29E97-3BE2-4EA1-8270-813A35DAD5F6}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{88E29E97-3BE2-4EA1-8270-813A35DAD5F6}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{88E29E97-3BE2-4EA1-8270-813A35DAD5F6}.Debug|x86.ActiveCfg = Debug|x86
+		{88E29E97-3BE2-4EA1-8270-813A35DAD5F6}.Debug|x86.Build.0 = Debug|x86
+		{88E29E97-3BE2-4EA1-8270-813A35DAD5F6}.Release|Any CPU.ActiveCfg = Release|x86
+		{88E29E97-3BE2-4EA1-8270-813A35DAD5F6}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{88E29E97-3BE2-4EA1-8270-813A35DAD5F6}.Release|Mixed Platforms.Build.0 = Release|x86
+		{88E29E97-3BE2-4EA1-8270-813A35DAD5F6}.Release|x86.ActiveCfg = Release|x86
+		{88E29E97-3BE2-4EA1-8270-813A35DAD5F6}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
