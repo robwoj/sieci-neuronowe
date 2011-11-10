@@ -54,6 +54,28 @@ namespace Perceptron1
         }
 
         /// <summary>
+        /// Tworzy nową sieć warstwową
+        /// </summary>
+        /// <param name="dimension">
+        /// Wymiar wejścia
+        /// </param>
+        /// <param name="layersDimensions">
+        /// Lista wymiarów każdej warstwy
+        /// </param>
+        public MLPNetwork(int dimension, List<int> layersDimensions)
+        {
+            inputDimension = dimension;
+
+            layers = new List<UniqueLayer>(layersDimensions.Count);
+
+            // Tworzy każdą z warstw nie ucząc ich
+            for (int i = 0; i < layersDimensions.Count; i++)
+            {
+                layers[i] = new UniqueLayer(inputDimension, layersDimensions[i], perceptronCreated);
+            }
+        }
+
+        /// <summary>
         /// Funkcja przeznaczona do tworzenia nowej sieci warstwowej algortymem kafelkowym
         /// </summary>
         /// <param name="iterations">

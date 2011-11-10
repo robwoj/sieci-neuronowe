@@ -16,6 +16,9 @@ namespace Perceptron1
         // Wartość oczekiwana
         private Vector expectedValue;
 
+        /// <summary>
+        /// Konstruuje przykład uczący z klasyfikacją liczbową
+        /// </summary>
         public LearningExample(Vector example, double expectedValue)
         {
             v = example;
@@ -24,6 +27,9 @@ namespace Perceptron1
             this.expectedValue = expectedVector;
         }
 
+        /// <summary>
+        /// Konstruuje przykład uczący z klasyfikacją wektorową
+        /// </summary>
         public LearningExample(Vector example, Vector expectedValue)
         {
             v = example;

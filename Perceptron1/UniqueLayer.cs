@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Perceptron1
 {
+
     /// <summary>
     /// Klasa reprezentująca warstwę sieci neuronów
     /// Warstwa ta ma wszystkie wejścia takie same dla każdego perceptronu składowego
@@ -54,6 +55,46 @@ namespace Perceptron1
         }
 
         /// <summary>
+        /// Tworzy nową warstwę nie ucząc jej algorytmem kaflowym.
+        /// Uczenie zostanie przeprowadzone później (za pomocą propagacji wstecznej)
+        /// </summary>
+        /// <param name="inputDim">
+        /// Wymiar wejścia
+        /// </param>
+        /// <param name="perceptronsCount">
+        /// Liczba perceptronów w warstwie
+        /// </param>
+        public UniqueLayer(int inputDim, int perceptronsCount, PerceptronEvent ev)
+        {
+            // Przypisanie obsługi zdarzenia
+            OnPerceptronCreated += ev;
+
+            // Przypisanie wartości wymiaru wejściowego i sprawdzenie
+            inputDimension = inputDim;
+            checkInputDim();
+
+            // Inicjalizacja listy perceptronów
+            perceptrons = new List<Perceptron>(perceptronsCount);
+
+            for (int i = 0; i < perceptronsCount; i++)
+            {
+                perceptrons.Add(new Perceptron(inputDimension));
+            }
+        }
+
+
+        private void checkInputDim()
+        {
+            // Sprawdzenie poprawności wymiaru wejścia
+            if (inputDimension <= 0)
+            {
+                throw new InvalidOperationException(
+                    "Rozmiar wejścia musi być większy od zera");
+            }
+
+        }
+
+        /// <summary>
         /// Tworzy nową warstwę
         /// </summary>
         /// <param name="inputDim">
@@ -80,12 +121,8 @@ namespace Perceptron1
 
             inputDimension = inputDim;
 
-            // Sprawdzenie poprawności wymiaru wejścia
-            if (inputDim <= 0)
-            {
-                throw new InvalidOperationException(
-                    "Rozmiar wejścia musi być większy od zera");
-            }
+            // Sprawdza poprawność wymiaru wejściowego
+            checkInputDim();
 
             // Inicjuje listę perceptronów
             perceptrons = new List<Perceptron>();
