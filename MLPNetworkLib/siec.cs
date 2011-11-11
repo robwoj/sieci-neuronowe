@@ -72,7 +72,7 @@ namespace MLPNetworkLib
             // Tworzy każdą z warstw nie ucząc ich
             for (int i = 0; i < layersDimensions.Count; i++)
             {
-                layers[i] = new UniqueLayer(inputDimension, layersDimensions[i], perceptronCreated);
+                layers.Add(new UniqueLayer(inputDimension, layersDimensions[i], perceptronCreated));
             }
         }
 

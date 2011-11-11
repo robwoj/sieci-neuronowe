@@ -7,9 +7,9 @@
         <Image Height="140" HorizontalAlignment="Left" Margin="293,33,0,0" Name="destImg" Stretch="Fill" VerticalAlignment="Top" Width="140" />
         <Label Content="Obraz wejściowy" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="sourceLabel" VerticalAlignment="Top" />
         <Label Content="Obraz wyjściowy" Height="28" HorizontalAlignment="Left" Margin="293,12,0,0" Name="destLabel" VerticalAlignment="Top" />
-        <Button Content="Rozpocznij uczenie" Height="23" HorizontalAlignment="Left" Margin="158,33,0,0" Name="startButton" VerticalAlignment="Top" Width="129" />
+        <Button Content="Rozpocznij uczenie" Height="23" HorizontalAlignment="Left" Margin="158,33,0,0" Name="startButton" VerticalAlignment="Top" Width="129" Click="startButton_Click" />
         <Button Content="Zakończ uczenie" Height="23" HorizontalAlignment="Left" Margin="158,62,0,0" Name="stopButton" VerticalAlignment="Top" Width="129" IsEnabled="False" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="12,215,0,0" Name="errorText" VerticalAlignment="Top" Width="140" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="12,215,0,0" Name="errorText" VerticalAlignment="Top" Width="140" DataContext="{Binding}" />
         <Label Content="Wartość funkcji błędu" Height="28" HorizontalAlignment="Left" Margin="12,194,0,0" Name="ErrorLabel" VerticalAlignment="Top" Width="140" />
         <TextBox Height="23" HorizontalAlignment="Left" Margin="158,215,0,0" Name="iteracjaText" VerticalAlignment="Top" Width="129" />
         <Label Content="Liczba iteracji" Height="28" HorizontalAlignment="Left" Margin="158,194,0,0" Name="iteracjaLabel" VerticalAlignment="Top" />

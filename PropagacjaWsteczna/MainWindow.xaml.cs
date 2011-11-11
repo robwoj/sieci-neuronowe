@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MLPNetworkLib;
+using System.Resources;
 
 namespace PropagacjaWsteczna
 {
@@ -29,7 +30,9 @@ namespace PropagacjaWsteczna
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            topologiaCombo.SelectedItem = Topologie.top2x32x32x3;            
+            topologiaCombo.Items.Add(Topologie.top2x32x32x3);
+            topologiaCombo.SelectedItem = Topologie.top2x32x32x3;
+            
         }
 
         private List<int> parseTopology(string top)
@@ -65,6 +68,19 @@ namespace PropagacjaWsteczna
             {
                 Close();
             }
+        }
+
+        private void startButton_Click(object sender, RoutedEventArgs e)
+        {
+            startButton.IsEnabled = false;
+            stopButton.IsEnabled = true;
+
+            List<int> lista = parseTopology((string)topologiaCombo.SelectedItem);
+            int input = lista[0];
+            lista.RemoveAt(0);
+            network = new MLPNetwork(input, lista);
+
+
         }
     }
 }

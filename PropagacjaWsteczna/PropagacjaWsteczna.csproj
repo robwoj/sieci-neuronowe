@@ -115,6 +115,10 @@
       <Project>{B59F4BC9-5927-4C4B-A845-37A9FA2CBE3A}</Project>
       <Name>MLPNetworkLib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Perceptron\PerceptronLib.csproj">
+      <Project>{2E87769C-B334-4188-9A08-51A30E743686}</Project>
+      <Name>PerceptronLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
