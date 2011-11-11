@@ -315,7 +315,7 @@ namespace Perceptron2
                 LearningExample ex = new LearningExample(v, 0);
 
                 // Sprawdza, na jaki kolor należy pomalować prostokąt
-                if (network.classify(ex) == 1)
+                if (network.classify(ex)[1] == 1)
                 {
                     // Koloruje na czerwono
                     classRect.Fill = new SolidColorBrush(Colors.Red);

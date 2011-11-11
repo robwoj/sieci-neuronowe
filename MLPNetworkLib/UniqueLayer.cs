@@ -81,6 +81,14 @@ namespace MLPNetworkLib
             {
                 perceptrons.Add(new Perceptron(inputDimension));
             }
+
+            //string str = "";
+            //foreach (Perceptron p in perceptrons)
+            //{
+            //    str += (p.Weights.ToString() + " ");
+            //}
+
+            //System.Windows.MessageBox.Show(str);
         }
 
 

@@ -14,6 +14,8 @@ using System.Windows.Shapes;
 using MLPNetworkLib;
 using System.Resources;
 using System.Threading;
+using System.Drawing;
+using PerceptronLib;
 
 namespace PropagacjaWsteczna
 {
@@ -79,10 +81,13 @@ namespace PropagacjaWsteczna
             stopButton.IsEnabled = true;
 
             List<int> lista = parseTopology((string)topologiaCombo.SelectedItem);
-            int input = lista[0];
+            int input = lista[0] + 1;
             lista.RemoveAt(0);
             network = new MLPNetwork(input, lista);
 
+            createLearningExamples();
+
+            workingThread = new Thread(startLearning);
             workingThread.Start(0);
         }
 
@@ -90,6 +95,10 @@ namespace PropagacjaWsteczna
         {
             startButton.IsEnabled = true;
             stopButton.IsEnabled = false;
+
+            workingThread.Abort();
+
+            printLearnedImage();
 
         }
 
@@ -107,6 +116,95 @@ namespace PropagacjaWsteczna
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             workingThread.Abort();
+        }
+
+        /// <summary>
+        /// Funkcja przeznaczona do kontruowania zbioru przykładów uczących.
+        /// Wczytuje obraz wejściowy i zamienia każdy piksel na odpowiedni 
+        /// przykład wejściowy.
+        /// </summary>
+        private void createLearningExamples()
+        {
+            // Wczytuje obraze z pliku
+            Bitmap img = (Bitmap)System.Drawing.Image.FromFile("cavalier.jpg");
+            List<LearningExample> examples = new List<LearningExample>(img.Width * img.Height);
+
+            for (int i = 0; i < img.Width; i++)
+            {
+                for (int j = 0; j < img.Height; j++)
+                {
+                    PerceptronLib.Vector point = new PerceptronLib.Vector(3);
+                    point[1] = i;
+                    point[2] = j;
+
+                    PerceptronLib.Vector value = new PerceptronLib.Vector(4);
+                    value[1] = normalizeByte(img.GetPixel(i, j).R);
+                    value[2] = normalizeByte(img.GetPixel(i, j).G);
+                    value[3] = normalizeByte(img.GetPixel(i, j).B);
+                    LearningExample ex = new LearningExample(point, value);
+
+                    examples.Add(ex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Funkcja przeznaczona do normalizacji koloru
+        /// </summary>
+        private double normalizeByte(byte b)
+        {
+            return (double)(b) / 256.0F;
+        }
+
+        /// <summary>
+        /// Funkcja przeznaczona do denormalizacji koloru
+        /// </summary>
+        private byte deNormalizeDouble(double d)
+        {
+            return (byte)(d * 256.0F);
+        }
+
+        /// <summary>
+        /// Funkcja przeznaczona do drukowania obrazu przedstawianego przez nauczoną sieć
+        /// </summary>
+        private void printLearnedImage()
+        {
+            Bitmap source = (Bitmap)System.Drawing.Image.FromFile("cavalier.jpg");
+            Bitmap img = new Bitmap(source.Width, source.Height);
+
+            MessageBox.Show("Rozpoczynanie odczytywania");
+            for (int i = 0; i < img.Width; i++)
+            {
+                for (int j = 0; j < img.Height; j++)
+                {
+                    PerceptronLib.Vector point = new PerceptronLib.Vector(3);
+                    point[1] = i;
+                    point[2] = j;
+
+                    LearningExample ex = new LearningExample(point, new PerceptronLib.Vector());
+
+                    PerceptronLib.Vector result = network.classify(ex);
+
+                    //MessageBox.Show(result.ToString());
+                    img.SetPixel(i, j, System.Drawing.Color.FromArgb(255, deNormalizeDouble(result[1]),
+                        deNormalizeDouble(result[2]), deNormalizeDouble(result[3])));
+
+                    //System.Drawing.Color c = img.GetPixel(i, j);
+                    //MessageBox.Show("R: " + c.R + " G: " + c.G + " B: " + c.B);
+                        
+                }
+            }
+
+            img.Save("output.bmp");
+
+            //BitmapImage src = new BitmapImage();
+            //src.BeginInit();
+            //src.UriSource = new Uri("output.bmp", UriKind.Relative);
+            //src.EndInit();
+            //destImg.Source = src;
+            //destImg.Stretch = Stretch.Uniform;
+
+            destImg.Source = new BitmapImage(new Uri("utput.bmp", UriKind.Relative));
         }
     }
 }

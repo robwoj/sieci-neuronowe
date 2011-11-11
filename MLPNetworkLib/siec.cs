@@ -72,8 +72,15 @@ namespace MLPNetworkLib
             // Tworzy każdą z warstw nie ucząc ich
             for (int i = 0; i < layersDimensions.Count; i++)
             {
-                layers.Add(new UniqueLayer(inputDimension, layersDimensions[i], perceptronCreated));
+                //if (i > 0)
+                //{
+                //    System.Windows.MessageBox.Show("OutputDim: " + layers[i - 1].OutputDimension);
+                //}
+                layers.Add(new UniqueLayer(i > 0 ? layers[i - 1].OutputDimension : inputDimension, layersDimensions[i], perceptronCreated));
+                string str = "";
+
             }
+            //System.Windows.MessageBox.Show("OutputDim: " + layers.Last().OutputDimension);
         }
 
         /// <summary>
@@ -180,7 +187,7 @@ namespace MLPNetworkLib
         /// <returns>
         /// Klasyfikacja podanego przykładu
         /// </returns>
-        public double classify(LearningExample example)
+        public Vector classify(LearningExample example)
         {
             LearningExample newExample = example;
 
@@ -189,9 +196,9 @@ namespace MLPNetworkLib
             {
                 newExample = new LearningExample(layers[i].compute(newExample), example.ExpectedDoubleValue);
 
-            }
+            } 
 
-            return newExample.Example[1];
+            return newExample.Example;
         }
 
         /// <summary>
