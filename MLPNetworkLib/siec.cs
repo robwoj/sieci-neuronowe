@@ -193,6 +193,14 @@ namespace MLPNetworkLib
 
             return newExample.Example[1];
         }
+
+        /// <summary>
+        /// Uczy sieć za pomocą propagacji wstecznej
+        /// </summary>
+        public void learnNetwork(int iterations)
+        {
+
+        }
     }
 
 }

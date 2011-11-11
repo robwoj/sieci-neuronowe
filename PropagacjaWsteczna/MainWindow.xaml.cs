@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MLPNetworkLib;
 using System.Resources;
+using System.Threading;
 
 namespace PropagacjaWsteczna
 {
@@ -22,6 +23,7 @@ namespace PropagacjaWsteczna
     public partial class MainWindow : Window
     {
         private MLPNetwork network;
+        private Thread workingThread;
 
         public MainWindow()
         {
@@ -32,6 +34,7 @@ namespace PropagacjaWsteczna
         {
             topologiaCombo.Items.Add(Topologie.top2x32x32x3);
             topologiaCombo.SelectedItem = Topologie.top2x32x32x3;
+            workingThread = new Thread(startLearning);
             
         }
 
@@ -80,7 +83,30 @@ namespace PropagacjaWsteczna
             lista.RemoveAt(0);
             network = new MLPNetwork(input, lista);
 
+            workingThread.Start(0);
+        }
 
+        private void stopButton_Click(object sender, RoutedEventArgs e)
+        {
+            startButton.IsEnabled = true;
+            stopButton.IsEnabled = false;
+
+        }
+
+        /// <summary>
+        /// Funkcja wykonywana przez wątek
+        /// </summary>
+        /// <param name="iterations">
+        /// Maksymalna liczba iteracji. Musi zostać podany typ int
+        /// </param>
+        public void startLearning(object iterations)
+        {
+
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            workingThread.Abort();
         }
     }
 }
