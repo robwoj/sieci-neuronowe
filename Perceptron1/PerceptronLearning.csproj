@@ -57,11 +57,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <None Include="Classification.cs.old" />
     <Compile Include="drawLine.cs" />
-    <None Include="EventArgs.cs.old" />
-    <None Include="siec.cs.old" />
-    <None Include="UniqueLayer.cs.old" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

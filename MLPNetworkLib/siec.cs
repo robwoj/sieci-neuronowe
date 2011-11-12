@@ -63,8 +63,10 @@ namespace MLPNetworkLib
         /// <param name="layersDimensions">
         /// Lista wymiarów każdej warstwy
         /// </param>
-        public MLPNetwork(int dimension, List<int> layersDimensions)
+        public MLPNetwork(int dimension, List<int> layersDimensions, PerceptronEvent ev, LayerEvent lev)
         {
+            OnPerceptronCreated += ev;
+            OnLayerCreated += lev;
             inputDimension = dimension;
 
             layers = new List<UniqueLayer>(layersDimensions.Count);
@@ -77,8 +79,8 @@ namespace MLPNetworkLib
                 //    System.Windows.MessageBox.Show("OutputDim: " + layers[i - 1].OutputDimension);
                 //}
                 layers.Add(new UniqueLayer(i > 0 ? layers[i - 1].OutputDimension : inputDimension, layersDimensions[i], perceptronCreated));
-                string str = "";
-
+                if(OnLayerCreated != null)
+                    OnLayerCreated(this, new LayerEventArgs(layers[i]));
             }
             //System.Windows.MessageBox.Show("OutputDim: " + layers.Last().OutputDimension);
         }

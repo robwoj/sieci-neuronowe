@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,6 +19,8 @@ using System.Threading;
 using System.Drawing;
 using PerceptronLib;
 
+#endregion 
+
 namespace PropagacjaWsteczna
 {
     /// <summary>
@@ -26,6 +30,9 @@ namespace PropagacjaWsteczna
     {
         private MLPNetwork network;
         private Thread workingThread;
+        List<LearningExample> examples;
+        // Wczytuje obraze z pliku
+        Bitmap img;
 
         public MainWindow()
         {
@@ -37,13 +44,20 @@ namespace PropagacjaWsteczna
             topologiaCombo.Items.Add(Topologie.top2x32x32x3);
             topologiaCombo.SelectedItem = Topologie.top2x32x32x3;
             workingThread = new Thread(startLearning);
-            
+            img = (Bitmap)System.Drawing.Image.FromFile("cavalier.jpg");
+            examples = new List<LearningExample>(img.Width * img.Height);
+            setIterTextDelegate += setIterText;
+            setImageSoureDelegate += setImageSource;
+            setKonsolaTextDelegate += setKonsolaText;
+            printLineDelegate += printLine;
+
+            createdPerceptronsCount = 0;
+            createdLayersCount = 0;
         }
 
         private List<int> parseTopology(string top)
         {
             List<int> lista = new List<int>();
-            int last = 0;
 
             string[] arr = top.Split("-".ToCharArray());
             foreach (string str in arr)
@@ -83,8 +97,8 @@ namespace PropagacjaWsteczna
             List<int> lista = parseTopology((string)topologiaCombo.SelectedItem);
             int input = lista[0] + 1;
             lista.RemoveAt(0);
-            network = new MLPNetwork(input, lista);
-
+            network = new MLPNetwork(input, lista, perceptronCreated, layerCreated);
+            network.OnPerceptronCreated += new PerceptronEvent(perceptronCreated);
             createLearningExamples();
 
             workingThread = new Thread(startLearning);
@@ -98,8 +112,13 @@ namespace PropagacjaWsteczna
 
             workingThread.Abort();
 
-            printLearnedImage();
+            workingThread = new Thread(startDrawing);
+            workingThread.Start();
+        }
 
+        private void startDrawing()
+        {
+            printLearnedImage();
         }
 
         /// <summary>
@@ -125,9 +144,6 @@ namespace PropagacjaWsteczna
         /// </summary>
         private void createLearningExamples()
         {
-            // Wczytuje obraze z pliku
-            Bitmap img = (Bitmap)System.Drawing.Image.FromFile("cavalier.jpg");
-            List<LearningExample> examples = new List<LearningExample>(img.Width * img.Height);
 
             for (int i = 0; i < img.Width; i++)
             {
@@ -169,34 +185,39 @@ namespace PropagacjaWsteczna
         /// </summary>
         private void printLearnedImage()
         {
-            Bitmap source = (Bitmap)System.Drawing.Image.FromFile("cavalier.jpg");
-            Bitmap img = new Bitmap(source.Width, source.Height);
+            //Bitmap source = (Bitmap)System.Drawing.Image.FromFile("cavalier.jpg");
+            //img = new Bitmap(source.Width, source.Height);
 
-            MessageBox.Show("Rozpoczynanie odczytywania");
+            MessageBox.Show("Rozmiar wejścia: " + img.Width + "x" + 
+                img.Height, "Rozpoczynanie odczytywania");
             for (int i = 0; i < img.Width; i++)
             {
+                
                 for (int j = 0; j < img.Height; j++)
                 {
-                    PerceptronLib.Vector point = new PerceptronLib.Vector(3);
-                    point[1] = i;
-                    point[2] = j;
+                    //PerceptronLib.Vector point = new PerceptronLib.Vector(3);
+                    //point[1] = i;
+                    //point[2] = j;
 
-                    LearningExample ex = new LearningExample(point, new PerceptronLib.Vector());
+                    //LearningExample ex = new LearningExample(point, new PerceptronLib.Vector());
 
-                    PerceptronLib.Vector result = network.classify(ex);
+                    PerceptronLib.Vector result = network.classify(examples[i * img.Height + j]);
 
                     //MessageBox.Show(result.ToString());
-                    img.SetPixel(i, j, System.Drawing.Color.FromArgb(255, deNormalizeDouble(result[1]),
-                        deNormalizeDouble(result[2]), deNormalizeDouble(result[3])));
+                    System.Drawing.Color c = System.Drawing.Color.FromArgb(255, deNormalizeDouble(result[1]),
+                        deNormalizeDouble(result[2]), deNormalizeDouble(result[3]));
+                    img.SetPixel(i, j, c);
 
                     //System.Drawing.Color c = img.GetPixel(i, j);
-                    //MessageBox.Show("R: " + c.R + " G: " + c.G + " B: " + c.B);
-                        
+                    Dispatcher.Invoke(printLineDelegate, "R: " + c.R + " G: " + c.G + " B: " + c.B);
+                    Dispatcher.Invoke(setIterTextDelegate, (i * img.Height + j).ToString()
+                        + " / " + img.Width * img.Height);
                 }
             }
 
+            MessageBox.Show("Zapisywanie pliku");
             img.Save("output.bmp");
-
+            
             //BitmapImage src = new BitmapImage();
             //src.BeginInit();
             //src.UriSource = new Uri("output.bmp", UriKind.Relative);
@@ -204,7 +225,49 @@ namespace PropagacjaWsteczna
             //destImg.Source = src;
             //destImg.Stretch = Stretch.Uniform;
 
-            destImg.Source = new BitmapImage(new Uri("utput.bmp", UriKind.Relative));
+            Dispatcher.Invoke(setImageSoureDelegate, "output.bmp");
+        }
+
+        private void setIterText(string str)
+        {
+            iteracjaText.Text = str;
+        }
+
+        private void setImageSource(string fileName)
+        {
+            destImg.BeginInit();
+            //destImg.Source = new BitmapImage(new Uri(fileName, UriKind.Relative));
+            destImg.EndInit();
+        }
+
+        private void setKonsolaText(string str)
+        {
+            konsola.Text = str;
+        }
+
+        private void printLine(string str)
+        {
+            konsola.Text += str + "\n";
+        }
+
+        private voidatstring setIterTextDelegate;
+        private voidatstring setImageSoureDelegate;
+        private voidatstring setKonsolaTextDelegate;
+        private voidatstring printLineDelegate;
+        private delegate void voidatstring(string str);
+
+        private int createdPerceptronsCount;
+        private int createdLayersCount;
+        private void perceptronCreated(object sender, PerceptronEventArgs e)
+        {
+            createdPerceptronsCount++;
+            Dispatcher.Invoke(printLineDelegate, createdPerceptronsCount.ToString() + ": Utworzono perceptron: " + e.Perceptron);
+        }
+
+        private void layerCreated(object sender, LayerEventArgs e)
+        {
+            createdLayersCount++;
+            Dispatcher.Invoke(printLineDelegate, createdLayersCount.ToString() + ": Utworzono warstwę");
         }
     }
 }

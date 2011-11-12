@@ -79,7 +79,10 @@ namespace MLPNetworkLib
 
             for (int i = 0; i < perceptronsCount; i++)
             {
-                perceptrons.Add(new Perceptron(inputDimension));
+                Perceptron p = new Perceptron(inputDimension);
+                perceptrons.Add(p);
+                if(OnPerceptronCreated != null)
+                    OnPerceptronCreated(this, new PerceptronEventArgs(p));
             }
 
             //string str = "";

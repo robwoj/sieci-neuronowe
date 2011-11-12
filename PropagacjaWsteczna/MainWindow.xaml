@@ -1,10 +1,10 @@
 ﻿<Window x:Class="PropagacjaWsteczna.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Rozpoznawanie obrazu" Height="300" Width="478" Loaded="Window_Loaded" KeyDown="Window_KeyDown" Closing="Window_Closing">
+        Title="Rozpoznawanie obrazu" Height="300" Width="639" Loaded="Window_Loaded" KeyDown="Window_KeyDown" Closing="Window_Closing">
     <Grid>
         <Image Height="140" HorizontalAlignment="Left" Margin="12,33,0,0" Name="sourceImg" Stretch="Fill" VerticalAlignment="Top" Width="140" Source="Resources/cavalier.jpg" />
-        <Image Height="140" HorizontalAlignment="Left" Margin="293,33,0,0" Name="destImg" Stretch="Fill" VerticalAlignment="Top" Width="140" />
+        <Image Height="140" HorizontalAlignment="Left" Margin="293,33,0,0" Name="destImg" Stretch="Fill" VerticalAlignment="Top" Width="140" Source="/PropagacjaWsteczna;component/bin/Debug/output.bmp" />
         <Label Content="Obraz wejściowy" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="sourceLabel" VerticalAlignment="Top" />
         <Label Content="Obraz wyjściowy" Height="28" HorizontalAlignment="Left" Margin="293,12,0,0" Name="destLabel" VerticalAlignment="Top" />
         <Button Content="Rozpocznij uczenie" Height="23" HorizontalAlignment="Left" Margin="158,33,0,0" Name="startButton" VerticalAlignment="Top" Width="129" Click="startButton_Click" />
@@ -15,5 +15,6 @@
         <Label Content="Liczba iteracji" Height="28" HorizontalAlignment="Left" Margin="158,194,0,0" Name="iteracjaLabel" VerticalAlignment="Top" />
         <ComboBox Height="23" HorizontalAlignment="Left" Margin="158,113,0,0" Name="topologiaCombo" VerticalAlignment="Top" Width="129" />
         <Label Content="Topologia" Height="28" HorizontalAlignment="Left" Margin="158,91,0,0" Name="topologiaLabel" VerticalAlignment="Top" />
+        <TextBox Margin="439,34,12,12" Name="konsola" VerticalScrollBarVisibility="Auto" />
     </Grid>
 </Window>
