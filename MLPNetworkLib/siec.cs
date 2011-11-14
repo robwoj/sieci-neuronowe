@@ -21,6 +21,11 @@ namespace MLPNetworkLib
         public event NetworkEvent OnNetworkCreated;
 
         /// <summary>
+        /// Zdarzenie wywoływane w momencie zakończenia uczenia sieci
+        /// </summary>
+        public event NetworkEvent OnNetworkLearned;
+
+        /// <summary>
         /// Zdarzenie wywoływane w momencie utworzenia i nauczenia nowego perceptronu
         /// </summary>
         public event PerceptronEvent OnPerceptronCreated;
@@ -63,13 +68,21 @@ namespace MLPNetworkLib
         /// <param name="layersDimensions">
         /// Lista wymiarów każdej warstwy
         /// </param>
-        public MLPNetwork(int dimension, List<int> layersDimensions, PerceptronEvent ev, LayerEvent lev)
+        /// <param name="examlesList">
+        /// Lista przykładów uczących
+        /// </param>
+        public MLPNetwork(int dimension, List<int> layersDimensions, PerceptronEvent ev, LayerEvent lev, 
+            List<LearningExample> examlesList)
         {
+            examples = examlesList;
             OnPerceptronCreated += ev;
             OnLayerCreated += lev;
             inputDimension = dimension;
 
             layers = new List<UniqueLayer>(layersDimensions.Count);
+
+            // Inicjuje generator liczb losowych przeznaczony do ustawiania zaren dla kolejnych warstw
+            Random r = new Random();
 
             // Tworzy każdą z warstw nie ucząc ich
             for (int i = 0; i < layersDimensions.Count; i++)
@@ -78,11 +91,13 @@ namespace MLPNetworkLib
                 //{
                 //    System.Windows.MessageBox.Show("OutputDim: " + layers[i - 1].OutputDimension);
                 //}
-                layers.Add(new UniqueLayer(i > 0 ? layers[i - 1].OutputDimension : inputDimension, layersDimensions[i], perceptronCreated));
-                if(OnLayerCreated != null)
+                layers.Add(new UniqueLayer(i > 0 ? layers[i - 1].OutputDimension : inputDimension,
+                    layersDimensions[i], perceptronCreated, r.Next()));
+                if (OnLayerCreated != null)
                     OnLayerCreated(this, new LayerEventArgs(layers[i]));
             }
             //System.Windows.MessageBox.Show("OutputDim: " + layers.Last().OutputDimension);
+            if (OnNetworkCreated != null) OnNetworkCreated(this, new NetworkEventArgs(this));
         }
 
         /// <summary>
@@ -112,8 +127,9 @@ namespace MLPNetworkLib
                     // Przekazuje nowej warstwie zbiór przykładów uczących 
                     // zwrócony przez warstwę poprzednią
                     layer = new UniqueLayer(layers[layers.Count - 1].OutputDimension,
-                        iterations, learningConstant, layers[layers.Count - 1].NextExamples, perceptronCreated);
-                    
+                        iterations, learningConstant, layers[layers.Count - 1].NextExamples,
+                        perceptronCreated);
+
                 }
 
                 // Dodaje warstwę do listy
@@ -153,7 +169,7 @@ namespace MLPNetworkLib
                 {
                     return false;
                 }
-                
+
                 // Klasyfikacja ostatniego perceptronu zgadza się z wartością oczekiwaną
                 if (newExample.Example[1] != newExample.ExpectedDoubleValue) return false;
             }
@@ -192,23 +208,141 @@ namespace MLPNetworkLib
         public Vector classify(LearningExample example)
         {
             LearningExample newExample = example;
+            classificationExamples = new List<LearningExample>();
 
             // Przechodzi kolejno przez wszystkie warstwy sieci
             for (int i = 0; i < layers.Count; i++)
             {
-                newExample = new LearningExample(layers[i].compute(newExample), example.ExpectedDoubleValue);
-
-            } 
+                newExample = new LearningExample(layers[i].compute(newExample), example.ExpectedValue);
+                classificationExamples.Add(newExample);
+                //System.Windows.MessageBox.Show(newExample.ToString());
+            }
 
             return newExample.Example;
         }
+
+        private List<LearningExample> classificationExamples;
 
         /// <summary>
         /// Uczy sieć za pomocą propagacji wstecznej
         /// </summary>
         public void learnNetwork(int iterations)
         {
+            Random r = new Random();
+            const double eta = 0.5;
 
+            // Oblicza wartości u dla każdego perceptronu
+            // Przykład wartości ui:
+            /// <code>
+            /// classificationExamples[0].Example 
+            /// </code>
+            Vector output;
+
+            for (int i = 0; i < iterations; i++)
+            {
+                // Obecnie rozważany przykład
+                LearningExample ex = examples[r.Next(examples.Count)];
+
+                classify(ex);
+
+                // Trzeba utworzyc wektory pamiętające wartości delta
+                Vector delta = new Vector(classificationExamples.Last().Example.Dimension);
+                Vector newDelta;
+
+                // Zmienne pomocnicze
+                Vector lastExapmle = classificationExamples.Last().Example;
+                Vector expected = classificationExamples[0].ExpectedValue;
+
+                // Utworzenie wartości delta dla warstwy ostatniej
+                for (int j = 1; j < lastExapmle.Dimension; j++)
+                {
+                    delta[j] = (expected[j] - lastExapmle[j]) * // Błąd
+                        lastExapmle[j] * (1 - lastExapmle[j]); // Pochodna cząstkowa
+                }
+
+                // Obliczenie wartości delta dla warstw niższych
+                // oraz odpowiednich wag
+                for (int j = layers.Count - 2; j >= 0; j--)
+                {
+
+                    output = classificationExamples[j + 1].Example;
+                    newDelta = new Vector(classificationExamples[j].Example.Dimension);
+                    newDelta.zeros();
+                    for (int k = 1; k < output.Dimension; k++)
+                    {
+                        for (int l = 1; l < layers[j].Perceptrons.Count; l++)
+                        {
+                            Perceptron p = layers[j + 1].Perceptrons[k - 1];
+
+                            newDelta[l] += delta[k] * p.Weights[l]
+                                * output[k] * (1 - output[k]); // Pochodna cząstkowa
+                        }
+                    }
+
+                    output = classificationExamples[j].Example;
+                    // Przypisanie nowych wag
+                    for (int k = 0; k < layers[j + 1].OutputDimension - 1; k++)
+                    {
+                        Perceptron p = layers[j + 1].Perceptrons[k];
+                        for (int l = 0; l < p.Dimension; l++)
+                        {
+                            p.Weights[l] += eta * delta[k + 1] * output[l];
+                        }
+                    }
+
+                    // Przyjmujemy nowy wektor delta
+                    delta = newDelta;
+                }
+
+                output = classificationExamples[0].Example;
+
+                // Przypisanie nowych wag
+                for (int k = 0; k < layers[0].OutputDimension - 1; k++)
+                {
+                    Perceptron p = layers[0].Perceptrons[k];
+                    for (int l = 0; l < p.Dimension; l++)
+                    {
+                        p.Weights[l] += eta * delta[k + 1] * output[l];
+                    }
+                }
+
+            }
+
+
+            if (OnNetworkLearned != null) OnNetworkLearned(this, new NetworkEventArgs(this));
+        }
+
+        private void mes(string str)
+        {
+            System.Windows.MessageBox.Show(str);
+        }
+
+        /// <summary>
+        /// Funkcja przeznaczona do badania globalnego błędu.
+        /// </summary>
+        private double globalError()
+        {
+            double err = 0;
+            if (examples.Count == 0) throw new Exception("Zerowa lista przkładów");
+
+            Vector sum = new Vector(examples[0].ExpectedValue.Dimension);
+
+            // Wyzerowuje wektor błędu
+            sum.zeros();
+
+            foreach (LearningExample ex in examples)
+            {
+                // Różnica kwadratowa
+                sum += (ex.ExpectedValue - classify(ex)).power(2);
+            }
+
+            // Zaczynamy od 1, żeby pominąć bias
+            for (int i = 1; i < examples[0].ExpectedValue.Dimension; i++)
+            {
+                err += sum[i];
+            }
+
+            return err;
         }
     }
 

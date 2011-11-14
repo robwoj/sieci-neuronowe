@@ -131,35 +131,47 @@ namespace PerceptronLib
         }
 
         /// <summary>
-        /// Operator dodawania wektorów. Wektory muszą mieć identyczne wymiary.
+        /// Funkcja przeznaczona do potęgowania wektora
         /// </summary>
-        public static Vector operator +(Vector a, Vector b)
+        /// <param name="val">
+        /// Wykładnik potęgi
+        /// </param>
+        /// <returns>
+        /// Wektor podniesiony do potęgi val
+        /// </returns>
+        public Vector power(double val)
         {
-            compareDimensions(a, b);
-            Vector sum = new Vector(a.Dimension);
-
-            for (int i = 0; i < a.Dimension; i++)
+            for (int i = 0; i < dimension; i++)
             {
-                sum[i] = a[i] + b[i];
+                array[i] = Math.Pow(array[i], val);
             }
 
-            return sum;
+            return this;
         }
 
         /// <summary>
-        /// Operator odejmowania wektorów. Wektory muszą mieć identyczne wymiary.
+        /// Funkcja przeznaczona do wyzerowania wektora. Jest potrzebna, jeśli nie korzystamy z wekotra
+        /// w typowy sposób, ponieważ wektor inicjowany jest wektorami losowymi.
         /// </summary>
-        public static Vector operator -(Vector a, Vector b)
+        public void zeros()
         {
-            compareDimensions(a, b);
-            Vector sum = new Vector(a.Dimension);
-
-            for (int i = 0; i < a.Dimension; i++)
+            for (int i = 0; i < dimension; i++)
             {
-                sum[i] = a[i] - b[i];
+                array[i] = 0;
             }
+        }
 
-            return sum;
+        /// <summary>
+        /// Zwraca wektor zerowy o wymiarze zgodnym z tym wektorem
+        /// </summary>
+        public Vector Zero
+        {
+            get
+            {
+                Vector v = new Vector(dimension);
+                v.zeros();
+                return v;
+            }
         }
 
         /// <summary>
