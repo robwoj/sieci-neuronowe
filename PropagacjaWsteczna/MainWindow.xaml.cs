@@ -29,7 +29,16 @@ namespace PropagacjaWsteczna
     public partial class MainWindow : Window
     {
         private MLPNetwork network;
+        
+        /// <summary>
+        /// Wątek uczenia sieci
+        /// </summary>
         private Thread workingThread;
+
+        /// <summary>
+        /// Wątek rysowania obrazu wyjściowego
+        /// </summary>
+        private Thread drawingThread;
         List<LearningExample> examples;
         // Wczytuje obraze z pliku
         Bitmap img;
@@ -41,9 +50,13 @@ namespace PropagacjaWsteczna
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            topologiaCombo.Items.Add(Topologie.top2x32x32x3);
-            topologiaCombo.SelectedItem = Topologie.top2x32x32x3;
+            iteracjaText.Text = 100.ToString();
+            
+            topologiaCombo.Items.Add("2-3-3-3");
+            topologiaCombo.SelectedIndex = 0;
             workingThread = new Thread(startLearning);
+            drawingThread = new Thread(startDrawing);
+           
             img = (Bitmap)System.Drawing.Image.FromFile("cavalier.jpg");
             examples = new List<LearningExample>(img.Width * img.Height);
             setIterTextDelegate += setIterText;
@@ -53,6 +66,16 @@ namespace PropagacjaWsteczna
 
             createdPerceptronsCount = 0;
             createdLayersCount = 0;
+
+            List<int> lista = parseTopology((string)topologiaCombo.SelectedItem);
+            int input = lista[0] + 1;
+            lista.RemoveAt(0);
+
+            createLearningExamples();
+            network = new MLPNetwork(input, lista, perceptronCreated, layerCreated, examples);
+            network.OnPerceptronCreated += new PerceptronEvent(perceptronCreated);
+            network.OnNetworkLearned += networkLearned;
+            networkLearnedDel = networkLearned;
         }
 
         private List<int> parseTopology(string top)
@@ -91,18 +114,21 @@ namespace PropagacjaWsteczna
 
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
-            startButton.IsEnabled = false;
-            stopButton.IsEnabled = true;
+            int liczba = 0;
+            try
+            {
+                int.TryParse(iteracjaText.Text, out liczba);
 
-            List<int> lista = parseTopology((string)topologiaCombo.SelectedItem);
-            int input = lista[0] + 1;
-            lista.RemoveAt(0);
-            network = new MLPNetwork(input, lista, perceptronCreated, layerCreated);
-            network.OnPerceptronCreated += new PerceptronEvent(perceptronCreated);
-            createLearningExamples();
+                startButton.IsEnabled = false;
+                stopButton.IsEnabled = true;
 
-            workingThread = new Thread(startLearning);
-            workingThread.Start(0);
+                workingThread = new Thread(startLearning);    
+                workingThread.Start(liczba);
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show("Zła liczba iteracji");
+            }
         }
 
         private void stopButton_Click(object sender, RoutedEventArgs e)
@@ -129,12 +155,18 @@ namespace PropagacjaWsteczna
         /// </param>
         public void startLearning(object iterations)
         {
+            if (iterations is int == false)
+            {
+                throw new InvalidCastException("Liczba iteracji musi być liczbą typu int");
+            }
 
+            network.learnNetwork((int)iterations);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             workingThread.Abort();
+            drawingThread.Abort();
         }
 
         /// <summary>
@@ -188,8 +220,10 @@ namespace PropagacjaWsteczna
             //Bitmap source = (Bitmap)System.Drawing.Image.FromFile("cavalier.jpg");
             //img = new Bitmap(source.Width, source.Height);
 
-            MessageBox.Show("Rozmiar wejścia: " + img.Width + "x" + 
-                img.Height, "Rozpoczynanie odczytywania");
+            //MessageBox.Show("Rozmiar wejścia: " + img.Width + "x" + 
+            //    img.Height, "Rozpoczynanie odczytywania");
+
+            Dispatcher.Invoke(printLineDelegate, "Rysowanie obrazu...");
             for (int i = 0; i < img.Width; i++)
             {
                 
@@ -200,8 +234,11 @@ namespace PropagacjaWsteczna
                     //point[2] = j;
 
                     //LearningExample ex = new LearningExample(point, new PerceptronLib.Vector());
-
-                    PerceptronLib.Vector result = network.classify(examples[i * img.Height + j]);
+                    PerceptronLib.Vector result;
+                    lock(network)
+                    {
+                        result = network.classify(examples[i * img.Height + j]);
+                    }
 
                     //MessageBox.Show(result.ToString());
                     System.Drawing.Color c = System.Drawing.Color.FromArgb(255, deNormalizeDouble(result[1]),
@@ -209,13 +246,13 @@ namespace PropagacjaWsteczna
                     img.SetPixel(i, j, c);
 
                     //System.Drawing.Color c = img.GetPixel(i, j);
-                    Dispatcher.Invoke(printLineDelegate, "R: " + c.R + " G: " + c.G + " B: " + c.B);
-                    Dispatcher.Invoke(setIterTextDelegate, (i * img.Height + j).ToString()
-                        + " / " + img.Width * img.Height);
+                    //Dispatcher.Invoke(printLineDelegate, "R: " + c.R + " G: " + c.G + " B: " + c.B);
+                    //Dispatcher.Invoke(setIterTextDelegate, (i * img.Height + j).ToString()
+                    //    + " / " + img.Width * img.Height);
                 }
             }
 
-            MessageBox.Show("Zapisywanie pliku");
+            Dispatcher.Invoke(printLineDelegate, "Zapisywanie pliku...");
             img.Save("output.bmp");
             
             //BitmapImage src = new BitmapImage();
@@ -267,7 +304,31 @@ namespace PropagacjaWsteczna
         private void layerCreated(object sender, LayerEventArgs e)
         {
             createdLayersCount++;
-            Dispatcher.Invoke(printLineDelegate, createdLayersCount.ToString() + ": Utworzono warstwę");
+            Dispatcher.Invoke(printLineDelegate, "Utworzono warstwę " + createdLayersCount.ToString());
         }
+
+        private void networkCreated(object sender, NetworkEventArgs e)
+        {
+
+        }
+
+        private void networkLearned(object sender, NetworkEventArgs e)
+        {
+            Dispatcher.Invoke(networkLearnedDel);
+        }
+
+        private delegate void voidatvoid();
+
+        private voidatvoid networkLearnedDel;
+
+        private void networkLearned()
+        {
+            startButton.IsEnabled = true;
+            stopButton.IsEnabled = false;
+
+            drawingThread = new Thread(startDrawing);
+            drawingThread.Start();
+        }
+
     }
 }

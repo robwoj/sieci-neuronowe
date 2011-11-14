@@ -65,7 +65,7 @@ namespace MLPNetworkLib
         /// <param name="perceptronsCount">
         /// Liczba perceptronów w warstwie
         /// </param>
-        public UniqueLayer(int inputDim, int perceptronsCount, PerceptronEvent ev)
+        public UniqueLayer(int inputDim, int perceptronsCount, PerceptronEvent ev, int seed = 0)
         {
             // Przypisanie obsługi zdarzenia
             OnPerceptronCreated += ev;
@@ -77,9 +77,13 @@ namespace MLPNetworkLib
             // Inicjalizacja listy perceptronów
             perceptrons = new List<Perceptron>(perceptronsCount);
 
+            // Inicjujemy generator liczb losowych, którego kolejne wyniki przekażemy jako ziarna
+            // do tworzonych perceptronów
+            Random r = seed == 0 ? new Random() : new Random(seed);
+
             for (int i = 0; i < perceptronsCount; i++)
             {
-                Perceptron p = new Perceptron(inputDimension);
+                Perceptron p = new Perceptron(inputDimension, r.Next());
                 perceptrons.Add(p);
                 if(OnPerceptronCreated != null)
                     OnPerceptronCreated(this, new PerceptronEventArgs(p));
@@ -304,13 +308,14 @@ namespace MLPNetworkLib
         {
             Vector v = new Vector(perceptrons.Count + 1);
 
+            // TODO: Sprawdzić, czy ta zmiana ma wpływ na działanie sieci
             // Inicjuje bias
-            v[0] = (new Random()).NextDouble();
+            v[0] = 1;
 
             // Kolejne współrzędne wektora wyjściowego są wyjściami perceptronów składowych
             for (int i = 0; i < perceptrons.Count; i++)
             {
-                v[i + 1] = perceptrons[i].function(ex.Example);
+                v[i + 1] = perceptrons[i].outputFunction(ex.Example);
             }
 
             return v;
@@ -335,6 +340,17 @@ namespace MLPNetworkLib
             get
             {
                 return nextExamples;
+            }
+        }
+
+        /// <summary>
+        /// Zwraca listę perceptronów w warstwie
+        /// </summary>
+        internal List<Perceptron> Perceptrons
+        {
+            get
+            {
+                return perceptrons;
             }
         }
     }

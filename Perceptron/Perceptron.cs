@@ -5,6 +5,21 @@ using System.Text;
 
 namespace PerceptronLib
 {
+    delegate double perceptronOutputFunction(Vector input);
+
+    public enum PerceptronOutputFunctionType
+    {
+        /// <summary>
+        /// Progowa funkcja wyjścia
+        /// </summary>
+        BiasFunction,
+
+        /// <summary>
+        /// Sigmoidalna funkcja wyjścia
+        /// </summary>
+        SigmoidalFunction
+    }
+
     /// <summary>
     /// Klasa reprezentująca perceptron
     /// </summary>
@@ -16,7 +31,7 @@ namespace PerceptronLib
         private Vector weights;
 
         /// <summary>
-        /// Konstruktor
+        /// Tworzy nowy perceptron na podstawie zadanego wektora wag
         /// </summary>
         public Perceptron(Vector weightVector)
         {
@@ -26,20 +41,22 @@ namespace PerceptronLib
             }
 
             weights = weightVector;
+            outputFunctionDelegate = biasFunction;
         }
 
         /// <summary>
         /// Konstruktor
         /// Tworzy wektor wag na podstawie wartości losowych 0.0 - 1.0
         /// </summary>
-        public Perceptron(int dimension)
+        public Perceptron(int dimension, int seed = 0)
         {
             weights = new Vector(dimension);
-            Random r = new Random(DateTime.Now.Millisecond);
+            Random r = seed == 0 ? new Random() : new Random(seed);
             for (int i = 0; i < weights.Dimension; i++)
             {
                 weights[i] = r.NextDouble();
             }
+            outputFunctionDelegate = biasFunction;
         }
 
         /// <summary>
@@ -110,7 +127,7 @@ namespace PerceptronLib
                 LearningExample example = examples[r.Next(count)];
 
                 // Oblicza błąd
-                double error = example.ExpectedDoubleValue - function(example.Example);
+                double error = example.ExpectedDoubleValue - outputFunction(example.Example);
 
                 if (error == 0)
                 {
@@ -158,7 +175,7 @@ namespace PerceptronLib
             {
 
                 // Jeśli wartość oczekiwana jest równa wartości obliczonej, zwiększa licznik
-                if(e.ExpectedDoubleValue == function(e.Example)) good++;
+                if(e.ExpectedDoubleValue == outputFunction(e.Example)) good++;
             }
 
             return good;
@@ -173,7 +190,27 @@ namespace PerceptronLib
         /// <returns>
         /// Klasyfikacja
         /// </returns>
-        public double function(Vector input)
+        public double outputFunction(Vector input)
+        {
+            if (outputFunctionDelegate != null)
+            {
+                return outputFunctionDelegate(input);
+            }
+            else
+            {
+                return biasFunction(input);
+            }
+        }
+
+        /// <summary>
+        /// Delegacja przeznaczona do wywołania funkcji wyjścia
+        /// </summary>
+        private perceptronOutputFunction outputFunctionDelegate;
+
+        /// <summary>
+        /// Progowa funkcja wyjścia
+        /// </summary>
+        private double biasFunction(Vector input)
         {
             if (input * weights > 0)
             {
@@ -182,6 +219,32 @@ namespace PerceptronLib
             else
             {
                 return -1;
+            }
+        }
+
+        /// <summary>
+        /// Sigmoidalna funkcja wyjścia
+        /// </summary>
+        private double sigmoidalFunction(Vector input)
+        {
+            return 1 / (1 - Math.Exp(-(input * weights)));
+        }
+
+        /// <summary>
+        /// Funkcja przeznaczona do zmiany typu funkcji wyjścia perceptronu
+        /// </summary>
+        public void setOutputFunctionType(PerceptronOutputFunctionType type)
+        {
+            switch (type)
+            {
+                case PerceptronOutputFunctionType.BiasFunction:
+                    {
+                        outputFunctionDelegate = biasFunction;
+                    } break;
+                case PerceptronOutputFunctionType.SigmoidalFunction:
+                    {
+                        outputFunctionDelegate = sigmoidalFunction;
+                    } break;
             }
         }
 

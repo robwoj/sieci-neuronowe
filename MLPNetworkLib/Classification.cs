@@ -81,7 +81,7 @@ namespace MLPNetworkLib
             // Kolejne współrzędne są klasyfikacjami odpowiednich perceptronów
             foreach (Perceptron p in perceptrons)
             {
-                classifications.Add(p.function(e.Example));
+                classifications.Add(p.outputFunction(e.Example));
             }
         }
 

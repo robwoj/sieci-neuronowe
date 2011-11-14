@@ -95,6 +95,12 @@ namespace MLPNetworkLib
                     layersDimensions[i], perceptronCreated, r.Next()));
                 if (OnLayerCreated != null)
                     OnLayerCreated(this, new LayerEventArgs(layers[i]));
+
+                // Przypisanie odpowiedniej funkcji wyjścia dla każdego perceptronu
+                foreach (Perceptron p in layers.Last().Perceptrons)
+                {
+                    p.setOutputFunctionType(PerceptronOutputFunctionType.SigmoidalFunction);
+                }
             }
             //System.Windows.MessageBox.Show("OutputDim: " + layers.Last().OutputDimension);
             if (OnNetworkCreated != null) OnNetworkCreated(this, new NetworkEventArgs(this));
@@ -215,8 +221,8 @@ namespace MLPNetworkLib
             {
                 newExample = new LearningExample(layers[i].compute(newExample), example.ExpectedValue);
                 classificationExamples.Add(newExample);
-                //System.Windows.MessageBox.Show(newExample.ToString());
             }
+            //System.Windows.MessageBox.Show(newExample.ToString());
 
             return newExample.Example;
         }

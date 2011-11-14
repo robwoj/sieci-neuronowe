@@ -69,5 +69,10 @@ namespace PerceptronLib
                 return expectedValue;
             }
         }
+
+        public override string ToString()
+        {
+            return Example.ToString() + " -> " + ExpectedValue;
+        }
     }
 }

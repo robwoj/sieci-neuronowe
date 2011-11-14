@@ -13,7 +13,7 @@
         <Label Content="Wartość funkcji błędu" Height="28" HorizontalAlignment="Left" Margin="12,194,0,0" Name="ErrorLabel" VerticalAlignment="Top" Width="140" />
         <TextBox Height="23" HorizontalAlignment="Left" Margin="158,215,0,0" Name="iteracjaText" VerticalAlignment="Top" Width="129" />
         <Label Content="Liczba iteracji" Height="28" HorizontalAlignment="Left" Margin="158,194,0,0" Name="iteracjaLabel" VerticalAlignment="Top" />
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="158,113,0,0" Name="topologiaCombo" VerticalAlignment="Top" Width="129" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="158,113,0,0" Name="topologiaCombo" VerticalAlignment="Top" Width="129" IsEditable="True" />
         <Label Content="Topologia" Height="28" HorizontalAlignment="Left" Margin="158,91,0,0" Name="topologiaLabel" VerticalAlignment="Top" />
         <TextBox Margin="439,34,12,12" Name="konsola" VerticalScrollBarVisibility="Auto" />
     </Grid>
