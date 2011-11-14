@@ -131,6 +131,38 @@ namespace PerceptronLib
         }
 
         /// <summary>
+        /// Operator dodawania wektorów. Wektory muszą mieć identyczne wymiary.
+        /// </summary>
+        public static Vector operator +(Vector a, Vector b)
+        {
+            compareDimensions(a, b);
+            Vector sum = new Vector(a.Dimension);
+
+            for (int i = 0; i < a.Dimension; i++)
+            {
+                sum[i] = a[i] + b[i];
+            }
+
+            return sum;
+        }
+
+        /// <summary>
+        /// Operator odejmowania wektorów. Wektory muszą mieć identyczne wymiary.
+        /// </summary>
+        public static Vector operator -(Vector a, Vector b)
+        {
+            compareDimensions(a, b);
+            Vector sum = new Vector(a.Dimension);
+
+            for (int i = 0; i < a.Dimension; i++)
+            {
+                sum[i] = a[i] - b[i];
+            }
+
+            return sum;
+        }
+
+        /// <summary>
         /// Operator indeksowania 
         /// </summary>
         public double this[int index]
