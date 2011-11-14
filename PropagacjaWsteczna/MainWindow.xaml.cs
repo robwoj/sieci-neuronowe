@@ -76,6 +76,7 @@ namespace PropagacjaWsteczna
             network.OnPerceptronCreated += new PerceptronEvent(perceptronCreated);
             network.OnNetworkLearned += networkLearned;
             networkLearnedDel = networkLearned;
+            network.OnLearningIterationEnded += iterationEnded;
         }
 
         private List<int> parseTopology(string top)
@@ -189,6 +190,9 @@ namespace PropagacjaWsteczna
                     value[1] = normalizeByte(img.GetPixel(i, j).R);
                     value[2] = normalizeByte(img.GetPixel(i, j).G);
                     value[3] = normalizeByte(img.GetPixel(i, j).B);
+                    //value[1] = (double)(img.GetPixel(i, j).R);
+                    //value[2] = (double)(img.GetPixel(i, j).G);
+                    //value[3] = (double)(img.GetPixel(i, j).B);
                     LearningExample ex = new LearningExample(point, value);
 
                     examples.Add(ex);
@@ -243,8 +247,15 @@ namespace PropagacjaWsteczna
                     //MessageBox.Show(result.ToString());
                     System.Drawing.Color c = System.Drawing.Color.FromArgb(255, deNormalizeDouble(result[1]),
                         deNormalizeDouble(result[2]), deNormalizeDouble(result[3]));
+                    //System.Drawing.Color c = System.Drawing.Color.FromArgb(255, (byte)(result[1]),
+                    //    (byte)(result[2]), (byte)(result[3]));
                     img.SetPixel(i, j, c);
 
+                    if (i * img.Height + j < 5)
+                    {
+                        Dispatcher.Invoke(printLineDelegate, result[1].ToString() + ", "
+                            + result[2] + ", " + result[3]);
+                    }
                     //System.Drawing.Color c = img.GetPixel(i, j);
                     //Dispatcher.Invoke(printLineDelegate, "R: " + c.R + " G: " + c.G + " B: " + c.B);
                     //Dispatcher.Invoke(setIterTextDelegate, (i * img.Height + j).ToString()
@@ -330,5 +341,13 @@ namespace PropagacjaWsteczna
             drawingThread.Start();
         }
 
+        private void iterationEnded(object sender, NetworkEventArgs e)
+        {
+            if (e is NetworkLearningIterationEventArgs)
+            {
+                Dispatcher.Invoke(printLineDelegate, ((NetworkLearningIterationEventArgs)e).IterationNumber.ToString()
+                    + ": " + e.Network.globalError());
+            }
+        }
     }
 }

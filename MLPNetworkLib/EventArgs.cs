@@ -47,6 +47,29 @@ namespace MLPNetworkLib
         }
     }
 
+    /// <summary>
+    /// Klasa reprezentująca zdarzenie zakończenia iteracji algorytmu
+    /// </summary>
+    public class NetworkLearningIterationEventArgs : NetworkEventArgs
+    {
+        private int iterationNumber;
+
+        public int IterationNumber
+        {
+            get
+            {
+                return iterationNumber;
+            }
+        }
+
+
+        public NetworkLearningIterationEventArgs(MLPNetwork network, int iteration)
+            : base(network)
+        {
+            iterationNumber = iteration;
+        }
+    }
+
     public delegate void NetworkEvent(object sender, NetworkEventArgs e);
     public delegate void LayerEvent(object sender, LayerEventArgs e);
 }

@@ -235,7 +235,7 @@ namespace MLPNetworkLib
         public void learnNetwork(int iterations)
         {
             Random r = new Random();
-            const double eta = 0.5;
+            const double eta = 5;
 
             // Oblicza wartości u dla każdego perceptronu
             // Przykład wartości ui:
@@ -312,11 +312,15 @@ namespace MLPNetworkLib
                     }
                 }
 
+                if (OnLearningIterationEnded != null)
+                    OnLearningIterationEnded(this, new NetworkLearningIterationEventArgs(this, i));
             }
 
 
             if (OnNetworkLearned != null) OnNetworkLearned(this, new NetworkEventArgs(this));
         }
+
+        public event NetworkEvent OnLearningIterationEnded;
 
         private void mes(string str)
         {
@@ -326,7 +330,7 @@ namespace MLPNetworkLib
         /// <summary>
         /// Funkcja przeznaczona do badania globalnego błędu.
         /// </summary>
-        private double globalError()
+        public double globalError()
         {
             double err = 0;
             if (examples.Count == 0) throw new Exception("Zerowa lista przkładów");
@@ -339,6 +343,7 @@ namespace MLPNetworkLib
             foreach (LearningExample ex in examples)
             {
                 // Różnica kwadratowa
+                //mes(classify(ex).ToString() + ", " + ex.ExpectedValue);
                 sum += (ex.ExpectedValue - classify(ex)).power(2);
             }
 
@@ -348,6 +353,9 @@ namespace MLPNetworkLib
                 err += sum[i];
             }
 
+            err /= 2.0F;
+
+            //System.Windows.MessageBox.Show(((long)err).ToString());
             return err;
         }
     }
