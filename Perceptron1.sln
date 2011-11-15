@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropagacjaWsteczna", "Propa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropagacjaWstecznaTests", "PropagacjaWstecznaTests\PropagacjaWstecznaTests.csproj", "{C28915BA-EA8E-4B23-939A-8278E327F741}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkTests", "NetworkTests\NetworkTests.csproj", "{F44EE478-4A83-40EC-BD82-4F2EB596A491}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Perceptron1.vsmdi
@@ -94,6 +96,16 @@ Global
 		{C28915BA-EA8E-4B23-939A-8278E327F741}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C28915BA-EA8E-4B23-939A-8278E327F741}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C28915BA-EA8E-4B23-939A-8278E327F741}.Release|x86.ActiveCfg = Release|Any CPU
+		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

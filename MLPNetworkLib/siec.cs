@@ -5,6 +5,8 @@ using System.Text;
 using System.Windows.Threading;
 using PerceptronLib;
 
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("NetworkTests")]
+
 namespace MLPNetworkLib
 {
     /// <summary>
@@ -42,6 +44,14 @@ namespace MLPNetworkLib
         // Lista warstw
         private List<UniqueLayer> layers;
 
+        internal List<UniqueLayer> Layers
+        {
+            get
+            {
+                return layers;
+            }
+        }
+
         /// <summary>
         /// Tworzy nowy obiekt
         /// </summary>
@@ -59,6 +69,34 @@ namespace MLPNetworkLib
             inputDimension = dimension;
         }
 
+        private void checkDimensions(int dimension, List<int> layersDimensions)
+        {
+            if (dimension <= 0)
+            {
+                throw new NetworkDimensionException("Wymiar wejścia musi być większy lub równy 0", dimension);
+            }
+
+            if (layersDimensions == null)
+            {
+                throw new NetworkDimensionException("Lista wymiarów nie jest zainicjowana");
+            }
+
+            if (layersDimensions.Count == 0)
+            {
+                throw new NetworkDimensionException("Lista wymiarów jest być pusta");
+            }
+
+            for (int i = 0; i < layersDimensions.Count; i++)
+            {
+                if (layersDimensions[i] <= 0)
+                {
+                    throw new NetworkDimensionException("Wymiary wszystkich warstw muszą być dodatnie",
+                        layersDimensions, i);
+                }
+            }
+
+        }
+
         /// <summary>
         /// Tworzy nową sieć warstwową
         /// </summary>
@@ -74,6 +112,8 @@ namespace MLPNetworkLib
         public MLPNetwork(int dimension, List<int> layersDimensions, PerceptronEvent ev, LayerEvent lev, 
             List<LearningExample> examlesList)
         {
+            checkDimensions(dimension, layersDimensions);
+
             examples = examlesList;
             OnPerceptronCreated += ev;
             OnLayerCreated += lev;
@@ -229,13 +269,30 @@ namespace MLPNetworkLib
 
         private List<LearningExample> classificationExamples;
 
+        internal List<LearningExample> ClassificationExamples
+        {
+            get
+            {
+                return classificationExamples;
+            }
+        }
+
+        internal List<Vector> delty;
+
         /// <summary>
         /// Uczy sieć za pomocą propagacji wstecznej
         /// </summary>
         public void learnNetwork(int iterations)
         {
+            delty = new List<Vector>();
+
+            if (examples.Count == 0)
+            {
+                throw new ExampleListException("Liczba przykładów musi być większa od zera");
+            }
+
             Random r = new Random();
-            const double eta = 5;
+            const double eta = 0.5;
 
             // Oblicza wartości u dla każdego perceptronu
             // Przykład wartości ui:
@@ -264,6 +321,8 @@ namespace MLPNetworkLib
                 {
                     delta[j] = (expected[j] - lastExapmle[j]) * // Błąd
                         lastExapmle[j] * (1 - lastExapmle[j]); // Pochodna cząstkowa
+                    //Console.WriteLine("(" + expected[j].ToString() + " - " + lastExapmle[j] + ")"
+                    //    + " * " + (lastExapmle[j] * (1 - lastExapmle[j])) + " = " + delta[j]);
                 }
 
                 // Obliczenie wartości delta dla warstw niższych
@@ -276,8 +335,13 @@ namespace MLPNetworkLib
                     newDelta.zeros();
                     for (int k = 1; k < output.Dimension; k++)
                     {
-                        for (int l = 1; l < layers[j].Perceptrons.Count; l++)
+                        for (int l = 1; l <= layers[j].Perceptrons.Count; l++)
                         {
+                            Console.WriteLine("W trakcie iteracja petli 'l': l = " + l + ", "
+                                + "liczba perceptronów warstwy " + j + " wynosi " +
+                                layers[j].Perceptrons.Count);
+
+                            // Perceptron zwracający ui
                             Perceptron p = layers[j + 1].Perceptrons[k - 1];
 
                             newDelta[l] += delta[k] * p.Weights[l]
@@ -296,9 +360,13 @@ namespace MLPNetworkLib
                         }
                     }
 
+                    delty.Add(delta);
+
                     // Przyjmujemy nowy wektor delta
                     delta = newDelta;
                 }
+
+                delty.Add(delta);
 
                 output = classificationExamples[0].Example;
 
@@ -312,7 +380,7 @@ namespace MLPNetworkLib
                     }
                 }
 
-                if (OnLearningIterationEnded != null)
+                if (OnLearningIterationEnded != null && i % 10000 == 0)
                     OnLearningIterationEnded(this, new NetworkLearningIterationEventArgs(this, i));
             }
 

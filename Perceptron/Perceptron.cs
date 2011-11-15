@@ -227,7 +227,7 @@ namespace PerceptronLib
         /// </summary>
         private double sigmoidalFunction(Vector input)
         {
-            return 1 / (1 - Math.Exp(-(input * weights)));
+            return 1 / (1 + Math.Exp(-(input * weights)));
         }
 
         /// <summary>

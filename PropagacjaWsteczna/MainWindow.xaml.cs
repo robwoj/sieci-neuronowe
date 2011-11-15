@@ -62,6 +62,7 @@ namespace PropagacjaWsteczna
             setIterTextDelegate += setIterText;
             setImageSoureDelegate += setImageSource;
             setKonsolaTextDelegate += setKonsolaText;
+            setErrorTextDelegate += setErrorText;
             printLineDelegate += printLine;
 
             createdPerceptronsCount = 0;
@@ -77,6 +78,7 @@ namespace PropagacjaWsteczna
             network.OnNetworkLearned += networkLearned;
             networkLearnedDel = networkLearned;
             network.OnLearningIterationEnded += iterationEnded;
+
         }
 
         private List<int> parseTopology(string top)
@@ -345,9 +347,19 @@ namespace PropagacjaWsteczna
         {
             if (e is NetworkLearningIterationEventArgs)
             {
-                Dispatcher.Invoke(printLineDelegate, ((NetworkLearningIterationEventArgs)e).IterationNumber.ToString()
-                    + ": " + e.Network.globalError());
+                //Dispatcher.Invoke(printLineDelegate, ((NetworkLearningIterationEventArgs)e).IterationNumber.ToString()
+                //    + ": " + e.Network.globalError());
+                NetworkLearningIterationEventArgs ea = (NetworkLearningIterationEventArgs)e;
+                Dispatcher.Invoke(setIterTextDelegate, ea.IterationNumber.ToString());
+                Dispatcher.Invoke(setErrorTextDelegate, ea.Network.globalError().ToString());
             }
         }
+
+        private void setErrorText(string error)
+        {
+            errorText.Text = error;
+        }
+
+        private voidatstring setErrorTextDelegate;
     }
 }

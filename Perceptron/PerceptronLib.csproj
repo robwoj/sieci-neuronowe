@@ -43,6 +43,7 @@
     <Compile Include="LearningExample.cs" />
     <Compile Include="Perceptron.cs" />
     <Compile Include="PerceptronEventArgs.cs" />
+    <Compile Include="PerceptronLibExceptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SizeException.cs" />
     <Compile Include="vector.cs" />
