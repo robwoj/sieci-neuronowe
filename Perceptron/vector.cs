@@ -143,7 +143,14 @@ namespace PerceptronLib
         {
             for (int i = 0; i < dimension; i++)
             {
-                array[i] = Math.Pow(array[i], val);
+                if (val != 2)
+                {
+                    array[i] = Math.Pow(array[i], val);
+                }
+                else
+                {
+                    array[i] = array[i] * array[i];
+                }
             }
 
             return this;

@@ -45,13 +45,21 @@ namespace PropagacjaWsteczna
 
         public MainWindow()
         {
+            windowLoaded = false;
             InitializeComponent();
         }
 
+        private bool windowLoaded;
+        private DateTime lastTime;
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            iteracjaText.Text = 100.ToString();
-            
+            iteracjaText.Text = 10000000.ToString();
+            lastTime = DateTime.Now;
+            lastIterNum = 0;
+
+            topologiaCombo.Items.Add("2-32-32-3");
+            topologiaCombo.Items.Add("2-64-64-3");
             topologiaCombo.Items.Add("2-3-3-3");
             topologiaCombo.SelectedIndex = 0;
             workingThread = new Thread(startLearning);
@@ -63,22 +71,15 @@ namespace PropagacjaWsteczna
             setImageSoureDelegate += setImageSource;
             setKonsolaTextDelegate += setKonsolaText;
             setErrorTextDelegate += setErrorText;
+            setProgressValueDelegate += setProgressValue;
             printLineDelegate += printLine;
 
             createdPerceptronsCount = 0;
             createdLayersCount = 0;
 
-            List<int> lista = parseTopology((string)topologiaCombo.SelectedItem);
-            int input = lista[0] + 1;
-            lista.RemoveAt(0);
+            windowLoaded = true;
 
-            createLearningExamples();
-            network = new MLPNetwork(input, lista, perceptronCreated, layerCreated, examples);
-            network.OnPerceptronCreated += new PerceptronEvent(perceptronCreated);
-            network.OnNetworkLearned += networkLearned;
-            networkLearnedDel = networkLearned;
-            network.OnLearningIterationEnded += iterationEnded;
-
+            createNetwork();
         }
 
         private List<int> parseTopology(string top)
@@ -115,18 +116,24 @@ namespace PropagacjaWsteczna
             }
         }
 
+        private int liczbaIteracji;
         private void startButton_Click(object sender, RoutedEventArgs e)
         {
-            int liczba = 0;
+            liczbaIteracji = 0;
             try
             {
-                int.TryParse(iteracjaText.Text, out liczba);
+                int.TryParse(iteracjaText.Text, out liczbaIteracji);
+
+                progressBar.Minimum = 0;
+                progressBar.Maximum = liczbaIteracji;
+                progressBar.Value = progressBar.Minimum;
 
                 startButton.IsEnabled = false;
                 stopButton.IsEnabled = true;
 
+                lastTime = DateTime.Now;
                 workingThread = new Thread(startLearning);    
-                workingThread.Start(liczba);
+                workingThread.Start(liczbaIteracji);
             }
             catch (ArgumentException)
             {
@@ -141,8 +148,8 @@ namespace PropagacjaWsteczna
 
             workingThread.Abort();
 
-            workingThread = new Thread(startDrawing);
-            workingThread.Start();
+            drawingThread = new Thread(startDrawing);
+            drawingThread.Start();
         }
 
         private void startDrawing()
@@ -253,7 +260,7 @@ namespace PropagacjaWsteczna
                     //    (byte)(result[2]), (byte)(result[3]));
                     img.SetPixel(i, j, c);
 
-                    if (i * img.Height + j < 5)
+                    if (i * img.Height + j < 20)
                     {
                         Dispatcher.Invoke(printLineDelegate, result[1].ToString() + ", "
                             + result[2] + ", " + result[3]);
@@ -304,7 +311,10 @@ namespace PropagacjaWsteczna
         private voidatstring setImageSoureDelegate;
         private voidatstring setKonsolaTextDelegate;
         private voidatstring printLineDelegate;
+        private voidatint setProgressValueDelegate;
         private delegate void voidatstring(string str);
+        private delegate void voidatint(int val);
+
 
         private int createdPerceptronsCount;
         private int createdLayersCount;
@@ -347,11 +357,12 @@ namespace PropagacjaWsteczna
         {
             if (e is NetworkLearningIterationEventArgs)
             {
-                //Dispatcher.Invoke(printLineDelegate, ((NetworkLearningIterationEventArgs)e).IterationNumber.ToString()
-                //    + ": " + e.Network.globalError());
                 NetworkLearningIterationEventArgs ea = (NetworkLearningIterationEventArgs)e;
+                
                 Dispatcher.Invoke(setIterTextDelegate, ea.IterationNumber.ToString());
                 Dispatcher.Invoke(setErrorTextDelegate, ea.Network.globalError().ToString());
+                Dispatcher.Invoke(setProgressValueDelegate, ea.IterationNumber);
+
             }
         }
 
@@ -361,5 +372,42 @@ namespace PropagacjaWsteczna
         }
 
         private voidatstring setErrorTextDelegate;
+
+        private void setProgressValue(int val)
+        {
+            DateTime now = DateTime.Now;
+            //MessageBox.Show(((double)(now - lastTime).TotalSeconds).ToString());
+            progressBar.Value = val;
+            double v = Math.Round((val - lastIterNum) / (double)(now - lastTime).TotalSeconds, 2);
+            lastIterNum = val;
+            lastTime = now;
+
+            timeLabel.Content = v.ToString() + "/s";
+            progressBar.ToolTip = Math.Round(((double)val / progressBar.Maximum) * 100.0F, 2).ToString() + "%";
+        }
+
+        private int lastIterNum;
+
+        private void topologiaCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (windowLoaded == true)
+            {
+                createNetwork();
+            }
+        }
+
+        private void createNetwork()
+        {
+            konsola.Text = "";
+            createLearningExamples(); 
+            List<int> lista = parseTopology((string)topologiaCombo.SelectedItem);
+            int input = lista[0] + 1;
+            lista.RemoveAt(0);
+            network = new MLPNetwork(input, lista, perceptronCreated, layerCreated, examples);
+            network.OnPerceptronCreated += new PerceptronEvent(perceptronCreated);
+            network.OnNetworkLearned += networkLearned;
+            networkLearnedDel = networkLearned;
+            network.OnLearningIterationEnded += iterationEnded;
+        }
     }
 }

@@ -284,7 +284,6 @@ namespace MLPNetworkLib
         /// </summary>
         public void learnNetwork(int iterations)
         {
-            delty = new List<Vector>();
 
             if (examples.Count == 0)
             {
@@ -292,7 +291,7 @@ namespace MLPNetworkLib
             }
 
             Random r = new Random();
-            const double eta = 0.5;
+            const double eta = 0.2;
 
             // Oblicza wartości u dla każdego perceptronu
             // Przykład wartości ui:
@@ -303,6 +302,9 @@ namespace MLPNetworkLib
 
             for (int i = 0; i < iterations; i++)
             {
+                // Inicjalizacja testowego wektora delt
+                delty = new List<Vector>();
+
                 // Obecnie rozważany przykład
                 LearningExample ex = examples[r.Next(examples.Count)];
 
@@ -337,9 +339,9 @@ namespace MLPNetworkLib
                     {
                         for (int l = 1; l <= layers[j].Perceptrons.Count; l++)
                         {
-                            Console.WriteLine("W trakcie iteracja petli 'l': l = " + l + ", "
-                                + "liczba perceptronów warstwy " + j + " wynosi " +
-                                layers[j].Perceptrons.Count);
+                            //Console.WriteLine("W trakcie iteracja petli 'l': l = " + l + ", "
+                            //    + "liczba perceptronów warstwy " + j + " wynosi " +
+                            //    layers[j].Perceptrons.Count);
 
                             // Perceptron zwracający ui
                             Perceptron p = layers[j + 1].Perceptrons[k - 1];
@@ -356,7 +358,7 @@ namespace MLPNetworkLib
                         Perceptron p = layers[j + 1].Perceptrons[k];
                         for (int l = 0; l < p.Dimension; l++)
                         {
-                            p.Weights[l] += eta * delta[k + 1] * output[l];
+                            p.Weights[l] = p.Weights[l] - eta * delta[k + 1] * output[l];
                         }
                     }
 
@@ -376,7 +378,7 @@ namespace MLPNetworkLib
                     Perceptron p = layers[0].Perceptrons[k];
                     for (int l = 0; l < p.Dimension; l++)
                     {
-                        p.Weights[l] += eta * delta[k + 1] * output[l];
+                        p.Weights[l] = p.Weights[l] - eta * delta[k + 1] * output[l];
                     }
                 }
 
