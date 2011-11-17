@@ -260,5 +260,13 @@ namespace PerceptronLib
             return base.GetHashCode();
         }
 
+
+        public void round(int precision = 3)
+        {
+            for (int i = 0; i < dimension; i++)
+            {
+                array[i] = Math.Round(array[i], precision);
+            }
+        }
     }
 }

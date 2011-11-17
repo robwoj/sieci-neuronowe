@@ -61,6 +61,7 @@ namespace PropagacjaWsteczna
             lastTime = DateTime.Now;
             lastIterNum = 0;
 
+            topologiaCombo.Items.Add("14-32-32-3");
             topologiaCombo.Items.Add("2-32-32-3");
             topologiaCombo.Items.Add("2-64-64-3");
             topologiaCombo.Items.Add("2-3-3-3");
@@ -198,14 +199,28 @@ namespace PropagacjaWsteczna
             {
                 for (int j = 0; j < img.Height; j++)
                 {
-                    PerceptronLib.Vector point = new PerceptronLib.Vector(3);
+                    PerceptronLib.Vector point = new PerceptronLib.Vector(15);
                     point[1] = i;
                     point[2] = j;
+                    point[3] = Math.Sin(point[1]);
+                    point[4] = Math.Sin(point[2]);
+                    point[5] = Math.Sin(point[1] + point[2]);
+                    point[6] = Math.Sin(2 * point[1] + point[2]);
+                    point[7] = Math.Sin(point[1] + 2 * point[2]);
+                    point[8] = Math.Sin(point[1] * point[1]);
+                    point[9] = Math.Sin(point[2] * point[2]);
+                    point[10] = Math.Sin(2 * (point[1] + point[2]));
+                    point[11] = Math.Sin(2 * point[1]);
+                    point[12] = Math.Sin(3 * point[1]);
+                    point[13] = Math.Sin(2 * point[2]);
+                    point[14] = Math.Sin(3 * point[2]);
 
                     PerceptronLib.Vector value = new PerceptronLib.Vector(4);
                     value[1] = normalizeByte(img.GetPixel(i, j).R);
                     value[2] = normalizeByte(img.GetPixel(i, j).G);
                     value[3] = normalizeByte(img.GetPixel(i, j).B);
+                    
+                    //value.round();
                     //value[1] = (double)(img.GetPixel(i, j).R);
                     //value[2] = (double)(img.GetPixel(i, j).G);
                     //value[3] = (double)(img.GetPixel(i, j).B);
@@ -299,9 +314,9 @@ namespace PropagacjaWsteczna
 
         private void setImageSource(string fileName)
         {
-            destImg.BeginInit();
+            //destImg.BeginInit();
             //destImg.Source = new BitmapImage(new Uri(fileName, UriKind.Relative));
-            destImg.EndInit();
+            //destImg.EndInit();
         }
 
         private void setKonsolaText(string str)

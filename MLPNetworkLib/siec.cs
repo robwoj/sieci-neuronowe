@@ -299,6 +299,7 @@ namespace MLPNetworkLib
                 foreach (Perceptron p in l.Perceptrons)
                 {
                     p.Beta = betaConstant;
+                    p.Weights.round();
                 }
             }
             // Oblicza wartości u dla każdego perceptronu
@@ -333,7 +334,7 @@ namespace MLPNetworkLib
                     //    + "\nPochodna wynosi " + lastExapmle[j] * (1 - lastExapmle[j]),
                     //    "Obliczanie delty " + j);
                     delta[j] = (lastExapmle[j] - expected[j]) * // Błąd
-                        lastExapmle[j] * (1 - lastExapmle[j]); // Pochodna cząstkowa
+                        lastExapmle[j] * (1 - lastExapmle[j]); // Pochodna
                     //Console.WriteLine("(" + expected[j].ToString() + " - " + lastExapmle[j] + ")"
                     //    + " * " + (lastExapmle[j] * (1 - lastExapmle[j])) + " = " + delta[j]);
                 }
@@ -358,7 +359,7 @@ namespace MLPNetworkLib
                             Perceptron p = layers[j + 1].Perceptrons[k - 1];
 
                             newDelta[l] += delta[k] * p.Weights[l]
-                                * output[l] * (1 - output[l]); // Pochodna cząstkowa
+                                * output[l] * (1 - output[l]); // Pochodna
                         }
                     }
 
@@ -371,6 +372,7 @@ namespace MLPNetworkLib
                         {
                             p.Weights[l] = p.Weights[l] - eta * delta[k + 1] * output[l];
                         }
+                        //p.Weights.round();
                     }
 
                     delty.Add(delta);
@@ -391,6 +393,7 @@ namespace MLPNetworkLib
                     {
                         p.Weights[l] = p.Weights[l] - eta * delta[k + 1] * output[l];
                     }
+                    //p.Weights.round();
                 }
 
                 if (OnLearningIterationEnded != null && i % 10000 == 0)

@@ -59,6 +59,8 @@ namespace PerceptronLib
             }
             outputFunctionDelegate = biasFunction;
             beta = 1;
+
+            
         }
 
         /// <summary>
@@ -243,6 +245,10 @@ namespace PerceptronLib
         /// </summary>
         private double sigmoidalFunction(Vector input)
         {
+            //Console.WriteLine((beta * (input * weights)).ToString());
+            //if (1 / (1 + Math.Exp(-beta * (input * weights))) <= 0.00001
+            //    || 1 / (1 + Math.Exp(-beta * (input * weights))) >= 0.99999)
+            //    throw new Exception("Iloczyn bliski zeru");
             return 1 / (1 + Math.Exp(-beta * (input * weights)));
         }
 
