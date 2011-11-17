@@ -6,6 +6,7 @@ using System.Windows.Threading;
 using PerceptronLib;
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("NetworkTests")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("PropagacjaWsteczna")]
 
 namespace MLPNetworkLib
 {
@@ -282,7 +283,7 @@ namespace MLPNetworkLib
         /// <summary>
         /// Uczy sieć za pomocą propagacji wstecznej
         /// </summary>
-        public void learnNetwork(int iterations)
+        public void learnNetwork(int iterations, double learningConstant, double betaConstant)
         {
 
             if (examples.Count == 0)
@@ -291,8 +292,15 @@ namespace MLPNetworkLib
             }
 
             Random r = new Random();
-            const double eta = 0.2;
+            double eta = learningConstant;
 
+            foreach (UniqueLayer l in layers)
+            {
+                foreach (Perceptron p in l.Perceptrons)
+                {
+                    p.Beta = betaConstant;
+                }
+            }
             // Oblicza wartości u dla każdego perceptronu
             // Przykład wartości ui:
             /// <code>
@@ -321,7 +329,10 @@ namespace MLPNetworkLib
                 // Utworzenie wartości delta dla warstwy ostatniej
                 for (int j = 1; j < lastExapmle.Dimension; j++)
                 {
-                    delta[j] = (expected[j] - lastExapmle[j]) * // Błąd
+                    //System.Windows.MessageBox.Show("Błąd wynosi " + (lastExapmle[j] - expected[j])
+                    //    + "\nPochodna wynosi " + lastExapmle[j] * (1 - lastExapmle[j]),
+                    //    "Obliczanie delty " + j);
+                    delta[j] = (lastExapmle[j] - expected[j]) * // Błąd
                         lastExapmle[j] * (1 - lastExapmle[j]); // Pochodna cząstkowa
                     //Console.WriteLine("(" + expected[j].ToString() + " - " + lastExapmle[j] + ")"
                     //    + " * " + (lastExapmle[j] * (1 - lastExapmle[j])) + " = " + delta[j]);
@@ -332,10 +343,10 @@ namespace MLPNetworkLib
                 for (int j = layers.Count - 2; j >= 0; j--)
                 {
 
-                    output = classificationExamples[j + 1].Example;
+                    output = classificationExamples[j].Example;
                     newDelta = new Vector(classificationExamples[j].Example.Dimension);
                     newDelta.zeros();
-                    for (int k = 1; k < output.Dimension; k++)
+                    for (int k = 1; k < classificationExamples[j + 1].Example.Dimension; k++)
                     {
                         for (int l = 1; l <= layers[j].Perceptrons.Count; l++)
                         {
@@ -347,7 +358,7 @@ namespace MLPNetworkLib
                             Perceptron p = layers[j + 1].Perceptrons[k - 1];
 
                             newDelta[l] += delta[k] * p.Weights[l]
-                                * output[k] * (1 - output[k]); // Pochodna cząstkowa
+                                * output[l] * (1 - output[l]); // Pochodna cząstkowa
                         }
                     }
 

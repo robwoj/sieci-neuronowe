@@ -54,6 +54,9 @@ namespace PropagacjaWsteczna
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            etaText.Text = (0.5).ToString();
+            betaText.Text = (0.005).ToString();
+
             iteracjaText.Text = 10000000.ToString();
             lastTime = DateTime.Now;
             lastIterNum = 0;
@@ -73,6 +76,8 @@ namespace PropagacjaWsteczna
             setErrorTextDelegate += setErrorText;
             setProgressValueDelegate += setProgressValue;
             printLineDelegate += printLine;
+            getBetaDelegate += getBeta;
+            getEtaDelegate += getEta;
 
             createdPerceptronsCount = 0;
             createdLayersCount = 0;
@@ -170,7 +175,9 @@ namespace PropagacjaWsteczna
                 throw new InvalidCastException("Liczba iteracji musi być liczbą typu int");
             }
 
-            network.learnNetwork((int)iterations);
+            network.learnNetwork((int)iterations, 
+                (double)Dispatcher.Invoke(getEtaDelegate), 
+                (double)Dispatcher.Invoke(getBetaDelegate));
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -186,7 +193,7 @@ namespace PropagacjaWsteczna
         /// </summary>
         private void createLearningExamples()
         {
-
+            //MessageBox.Show("Liczba przykładów uczących: " + img.Width * img.Height, "Tworzenie przykładów");
             for (int i = 0; i < img.Width; i++)
             {
                 for (int j = 0; j < img.Height; j++)
@@ -363,6 +370,12 @@ namespace PropagacjaWsteczna
                 Dispatcher.Invoke(setErrorTextDelegate, ea.Network.globalError().ToString());
                 Dispatcher.Invoke(setProgressValueDelegate, ea.IterationNumber);
 
+                //Dispatcher.Invoke(printLineDelegate, ea.Network.delty[0].ToString());
+                //Dispatcher.Invoke(printLineDelegate, ea.Network.ClassificationExamples.Last().ToString());
+                //Dispatcher.Invoke(printLineDelegate, "Iloczyn skalarny ostatniej warstwy: " + 
+                //    (ea.Network.ClassificationExamples[ea.Network.ClassificationExamples.Count - 2].Example
+                //    * ea.Network.Layers[2].Perceptrons[0].Weights).ToString());
+
             }
         }
 
@@ -408,6 +421,21 @@ namespace PropagacjaWsteczna
             network.OnNetworkLearned += networkLearned;
             networkLearnedDel = networkLearned;
             network.OnLearningIterationEnded += iterationEnded;
+            //printLine("Błąd globalny: " + network.globalError());
+            errorText.Text = network.globalError().ToString();
+        }
+
+        private delegate double doubleatvoid();
+        private doubleatvoid getEtaDelegate;
+        private doubleatvoid getBetaDelegate;
+        private double getEta()
+        {
+            return double.Parse(etaText.Text);
+        }
+
+        private double getBeta()
+        {
+            return double.Parse(betaText.Text);
         }
     }
 }

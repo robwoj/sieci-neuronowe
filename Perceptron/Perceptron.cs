@@ -42,6 +42,7 @@ namespace PerceptronLib
 
             weights = weightVector;
             outputFunctionDelegate = biasFunction;
+            beta = 1;
         }
 
         /// <summary>
@@ -57,6 +58,7 @@ namespace PerceptronLib
                 weights[i] = r.NextDouble();
             }
             outputFunctionDelegate = biasFunction;
+            beta = 1;
         }
 
         /// <summary>
@@ -222,12 +224,26 @@ namespace PerceptronLib
             }
         }
 
+        private double beta;
+
+        public double Beta
+        {
+            get
+            {
+                return beta;
+            }
+            set
+            {
+                beta = value;
+            }
+        }
+
         /// <summary>
         /// Sigmoidalna funkcja wyjścia
         /// </summary>
         private double sigmoidalFunction(Vector input)
         {
-            return 1 / (1 + Math.Exp(-(input * weights)));
+            return 1 / (1 + Math.Exp(-beta * (input * weights)));
         }
 
         /// <summary>

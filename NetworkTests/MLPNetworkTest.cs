@@ -96,7 +96,7 @@ namespace NetworkTests
 
                 try
                 {
-                    target.learnNetwork(iterations);
+                    target.learnNetwork(iterations, 0.5, 1);
                 }
                 catch (ExampleListException)
                 {
@@ -121,46 +121,94 @@ namespace NetworkTests
                     Vector expected = new Vector(2);
                     expected[1] = 0.8;
 
-                    Console.WriteLine(p2.Weights.ToString());
+                    //Console.WriteLine("Iloczyn wektorowy: " + v * p0.Weights);
+                    //Console.WriteLine(p2.Weights.ToString());
                     examples.Add(new LearningExample(v, expected));
-                    Console.WriteLine("Wyjście pierwszego perceptronu:");
-                    Console.WriteLine(p0.outputFunction(v).ToString());
+                    //Console.WriteLine("Wyjście pierwszego perceptronu:");
+                    //Console.WriteLine(p0.outputFunction(v).ToString());
 
-                    Console.WriteLine("Wyjście drugiego perceptronu:");
-                    Console.WriteLine(p1.outputFunction(v).ToString());
+                    //Console.WriteLine("Wyjście drugiego perceptronu:");
+                    //Console.WriteLine(p1.outputFunction(v).ToString());
 
                     Vector v0 = new Vector(3);
                     v0[0] = 1;
-                    v0[1] = p0.outputFunction(v);
-                    v0[2] = p1.outputFunction(v);
+                    v0[1] = s(0.64);
+                    v0[2] = s(-0.48);
 
-                    Console.WriteLine("Wyjście trzeciego perceptronu:");
-                    Console.WriteLine(p2.outputFunction(v0).ToString());
+                    target.classify(examples[0]);
 
-                    target.learnNetwork(iterations);
+                    v0 = round(v0);
+
+                    //Console.WriteLine("Wektor po zaokrągleniu: " + v0);
+                    // Sprawdza, czy dobrze liczone są wartości wyjściowe perceptronów
+                    Assert.AreEqual(v0.ToString(), round(target.ClassificationExamples[0].Example).ToString());
+
+                    Vector v1 = new Vector(2);
+                    v1[0] = 1;
+                    v1[1] = s(-0.886);
+                    v1 = round(v1);
+
+                    Assert.AreEqual(v1.ToString(), round(target.ClassificationExamples[1].Example).ToString());
+                    Assert.AreEqual(0.292, v1[1]);
+
+                    Console.WriteLine("Blad: " + target.globalError());
+                    target.learnNetwork(1, 0.5, 1);
                     Console.WriteLine("Wyjścia kolejnych warstw:");
                     foreach (LearningExample e in target.ClassificationExamples)
                     {
-                        Console.WriteLine(e.ToString());
+                        Console.WriteLine(round(e.Example).ToString());
                     }
 
-                    Console.WriteLine("Wartości delta po iteracji:");
-                    foreach (Vector d in target.delty)
-                    {
-                        Console.WriteLine(d.ToString());
-                    }
+                    Vector d0 = new Vector(2);
+                    d0[1] = -0.105;
+
+                    Assert.AreEqual(d0.ToString(), round(target.delty[0]).ToString());
+
+                    Vector d1 = new Vector(3);
+                    d1[1] = 0.019;
+                    d1[2] = -0.002;
+                    Assert.AreEqual(d1.ToString(), round(target.delty[1]).ToString());
+
 
                     Console.WriteLine("Wagi pierwszego perceptronu po iteracji:");
-                    Console.WriteLine(p0.Weights.ToString());
+                    Console.WriteLine(round(p0.Weights).ToString());
                     Console.WriteLine("Wagi drugiego perceptronu po iteracji:");
-                    Console.WriteLine(p1.Weights.ToString());
+                    Console.WriteLine(round(p1.Weights).ToString());
                     Console.WriteLine("Wagi trzeciego perceptronu po iteracji:");
-                    Console.WriteLine(p2.Weights.ToString());
+                    Console.WriteLine(round(p2.Weights).ToString());
+
+                    for (int i = 0; i < 500; i++)
+                    {
+                        target.learnNetwork(iterations, 0.5, 1);
+                        Console.WriteLine("Blad: " + target.globalError());
+                    }
                     return;
                 }
             }
 
             Assert.Fail("Nie został zrzucony odpowiedni wyjątek");
+        }
+
+        /// <summary>
+        /// Funkcja sigmoidalna
+        /// </summary>
+        private double s(double val)
+        {
+            double retval = 1 / (1 + Math.Exp(-val));
+            Assert.IsTrue(retval <= 1 && retval >= 0);
+
+            return retval;
+        }
+
+        private Vector round(Vector v, int places = 3)
+        {
+            Vector r = new Vector(v.Dimension);
+            for (int i = 0; i < v.Dimension; i++)
+            {
+                r[i] = Math.Round(v[i], places);
+            }
+
+            return r;
         }
     }
 }

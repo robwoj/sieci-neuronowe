@@ -13,10 +13,14 @@
         <Label Content="Wartość funkcji błędu" Height="28" HorizontalAlignment="Left" Margin="12,194,0,0" Name="ErrorLabel" VerticalAlignment="Top" Width="140" />
         <TextBox Height="23" HorizontalAlignment="Left" Margin="158,215,0,0" Name="iteracjaText" VerticalAlignment="Top" Width="129" />
         <Label Content="Liczba iteracji" Height="28" HorizontalAlignment="Left" Margin="158,194,0,0" Name="iteracjaLabel" VerticalAlignment="Top" />
-        <ComboBox Height="23" HorizontalAlignment="Left" Margin="158,113,0,0" Name="topologiaCombo" VerticalAlignment="Top" Width="129" IsEditable="True" SelectionChanged="topologiaCombo_SelectionChanged" />
-        <Label Content="Topologia" Height="28" HorizontalAlignment="Left" Margin="158,91,0,0" Name="topologiaLabel" VerticalAlignment="Top" />
+        <ComboBox Height="23" HorizontalAlignment="Left" Margin="158,104,0,0" Name="topologiaCombo" VerticalAlignment="Top" Width="129" IsEditable="True" SelectionChanged="topologiaCombo_SelectionChanged" />
+        <Label Content="Topologia" Height="28" HorizontalAlignment="Left" Margin="158,82,0,0" Name="topologiaLabel" VerticalAlignment="Top" />
         <TextBox Margin="439,34,12,12" Name="konsola" VerticalScrollBarVisibility="Auto" />
         <ProgressBar Height="10" HorizontalAlignment="Left" Margin="12,244,0,0" Name="progressBar" VerticalAlignment="Top" Width="275" />
         <Label Content="" Height="28" HorizontalAlignment="Left" Margin="293,215,0,0" Name="timeLabel" VerticalAlignment="Top" Width="140" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="158,150,0,0" Name="betaText" VerticalAlignment="Top" Width="57" />
+        <Label Content="Beta" Height="28" HorizontalAlignment="Left" Margin="158,126,0,0" Name="label1" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="221,150,0,0" Name="etaText" VerticalAlignment="Top" Width="66" />
+        <Label Content="Eta" Height="28" HorizontalAlignment="Left" Margin="221,126,0,0" Name="label2" VerticalAlignment="Top" />
     </Grid>
 </Window>
