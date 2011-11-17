@@ -110,7 +110,7 @@ namespace MLPNetworkLib
         /// <param name="examlesList">
         /// Lista przykładów uczących
         /// </param>
-        public MLPNetwork(int dimension, List<int> layersDimensions, PerceptronEvent ev, LayerEvent lev, 
+        public MLPNetwork(int dimension, List<int> layersDimensions, PerceptronEvent ev, LayerEvent lev,
             List<LearningExample> examlesList)
         {
             checkDimensions(dimension, layersDimensions);
@@ -293,7 +293,7 @@ namespace MLPNetworkLib
 
             Random r = new Random();
             double eta = learningConstant;
-
+            double mi = 0.1;
             foreach (UniqueLayer l in layers)
             {
                 foreach (Perceptron p in l.Perceptrons)
@@ -313,7 +313,6 @@ namespace MLPNetworkLib
             {
                 // Inicjalizacja testowego wektora delt
                 delty = new List<Vector>();
-
                 // Obecnie rozważany przykład
                 LearningExample ex = examples[r.Next(examples.Count)];
 
@@ -330,72 +329,101 @@ namespace MLPNetworkLib
                 // Utworzenie wartości delta dla warstwy ostatniej
                 for (int j = 1; j < lastExapmle.Dimension; j++)
                 {
-                    //System.Windows.MessageBox.Show("Błąd wynosi " + (lastExapmle[j] - expected[j])
-                    //    + "\nPochodna wynosi " + lastExapmle[j] * (1 - lastExapmle[j]),
-                    //    "Obliczanie delty " + j);
+                    if (i > 10000)
+                    {
+                        mes("Błąd wynosi " + (lastExapmle[j] - expected[j])
+                            + "\nPochodna wynosi " + lastExapmle[j] * (1 - lastExapmle[j]));
+                    }
                     delta[j] = (lastExapmle[j] - expected[j]) * // Błąd
                         lastExapmle[j] * (1 - lastExapmle[j]); // Pochodna
                     //Console.WriteLine("(" + expected[j].ToString() + " - " + lastExapmle[j] + ")"
                     //    + " * " + (lastExapmle[j] * (1 - lastExapmle[j])) + " = " + delta[j]);
                 }
 
+                //delta.round();
                 // Obliczenie wartości delta dla warstw niższych
                 // oraz odpowiednich wag
+                delty.Add(delta);
                 for (int j = layers.Count - 2; j >= 0; j--)
                 {
-
                     output = classificationExamples[j].Example;
-                    newDelta = new Vector(classificationExamples[j].Example.Dimension);
+                    //output.round();
+                    newDelta = new Vector(output.Dimension);
                     newDelta.zeros();
                     for (int k = 1; k < classificationExamples[j + 1].Example.Dimension; k++)
                     {
+                        // Perceptron zwracający ui
+                        Perceptron p = layers[j + 1].Perceptrons[k - 1];
                         for (int l = 1; l <= layers[j].Perceptrons.Count; l++)
                         {
-                            //Console.WriteLine("W trakcie iteracja petli 'l': l = " + l + ", "
-                            //    + "liczba perceptronów warstwy " + j + " wynosi " +
-                            //    layers[j].Perceptrons.Count);
-
-                            // Perceptron zwracający ui
-                            Perceptron p = layers[j + 1].Perceptrons[k - 1];
-
                             newDelta[l] += delta[k] * p.Weights[l]
                                 * output[l] * (1 - output[l]); // Pochodna
                         }
                     }
 
-                    output = classificationExamples[j].Example;
-                    // Przypisanie nowych wag
+                    //newDelta.round();
+                    // Przyjmujemy nowy wektor delta
+                    delta = newDelta;
+                    delty.Insert(0, delta);
+
+                }
+
+#if DEBUG
+                string str = ""; 
+#endif
+                for (int j = -1; j < layers.Count - 1; j++)
+                {
+                    if (j >= 0)
+                    {
+                        output = classificationExamples[j].Example;
+                    }
+                    else
+                    {
+                        output = ex.Example;
+                    }
+
                     for (int k = 0; k < layers[j + 1].OutputDimension - 1; k++)
                     {
                         Perceptron p = layers[j + 1].Perceptrons[k];
-                        for (int l = 0; l < p.Dimension; l++)
+#if DEBUG
+		                Vector tmp = new Vector(p.Dimension);
+  
+#endif
+                        for (int l = 0; l < output.Dimension; l++)
                         {
-                            p.Weights[l] = p.Weights[l] - eta * delta[k + 1] * output[l];
+                            //if (i > 10000)
+                            //{
+                            //    mes("u: " + output[l].ToString() + ", u': " + (output[l] * (1 - output[l])).ToString()
+                            //        + ", d: " + delty[j + 1][k + 1].ToString());
+                            //}
+                            p.Weights[l] -= eta * delty[j + 1][k + 1] * output[l]
+                                * (1 - mi)
+                                + mi * (p.Weights[l] - p.LastWeights[l]);
+
+                            p.LastWeights[l] = p.Weights[l];
+
+                            // Dla testowania
+#if DEBUG
+                            if (i == 10000)
+                            {
+                                tmp[l] = eta * delty[j + 1][k + 1] * output[l];
+                            }
+
+#endif
                         }
                         //p.Weights.round();
+
+#if DEBUG
+                        if(i == 10000)
+                            //str += tmp.ToString() + "\n";
+
+#endif
                     }
-
-                    delty.Add(delta);
-
-                    // Przyjmujemy nowy wektor delta
-                    delta = newDelta;
                 }
 
-                delty.Add(delta);
-
-                output = classificationExamples[0].Example;
-
-                // Przypisanie nowych wag
-                for (int k = 0; k < layers[0].OutputDimension - 1; k++)
-                {
-                    Perceptron p = layers[0].Perceptrons[k];
-                    for (int l = 0; l < p.Dimension; l++)
-                    {
-                        p.Weights[l] = p.Weights[l] - eta * delta[k + 1] * output[l];
-                    }
-                    //p.Weights.round();
-                }
-
+#if DEBUG
+                if (i == 10000) mes(str); 
+#endif
                 if (OnLearningIterationEnded != null && i % 10000 == 0)
                     OnLearningIterationEnded(this, new NetworkLearningIterationEventArgs(this, i));
             }

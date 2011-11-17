@@ -30,6 +30,16 @@ namespace PerceptronLib
         /// </summary>
         private Vector weights;
 
+        private Vector lastWeights;
+
+        public Vector LastWeights
+        {
+            get
+            {
+                return lastWeights;
+            }
+        }
+
         /// <summary>
         /// Tworzy nowy perceptron na podstawie zadanego wektora wag
         /// </summary>
@@ -60,7 +70,8 @@ namespace PerceptronLib
             outputFunctionDelegate = biasFunction;
             beta = 1;
 
-            
+            //weights.round();
+            lastWeights = weights;
         }
 
         /// <summary>

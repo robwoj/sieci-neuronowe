@@ -33,7 +33,7 @@ namespace PropagacjaWsteczna
         /// <summary>
         /// Wątek uczenia sieci
         /// </summary>
-        private Thread workingThread;
+        private List<Thread> workingThreads;
 
         /// <summary>
         /// Wątek rysowania obrazu wyjściowego
@@ -61,12 +61,16 @@ namespace PropagacjaWsteczna
             lastTime = DateTime.Now;
             lastIterNum = 0;
 
-            topologiaCombo.Items.Add("14-32-32-3");
+            topologiaCombo.Items.Add("2-64-32-32-3");
+            topologiaCombo.Items.Add("120-64-32-3");
+            topologiaCombo.Items.Add("30-32-32-3");
             topologiaCombo.Items.Add("2-32-32-3");
             topologiaCombo.Items.Add("2-64-64-3");
             topologiaCombo.Items.Add("2-3-3-3");
             topologiaCombo.SelectedIndex = 0;
-            workingThread = new Thread(startLearning);
+            workingThreads = new List<Thread>();
+            workingThreads.Add(new Thread(startLearning));
+            //workingThreads.Add(new Thread(startLearning));
             drawingThread = new Thread(startDrawing);
            
             img = (Bitmap)System.Drawing.Image.FromFile("cavalier.jpg");
@@ -138,8 +142,11 @@ namespace PropagacjaWsteczna
                 stopButton.IsEnabled = true;
 
                 lastTime = DateTime.Now;
-                workingThread = new Thread(startLearning);    
-                workingThread.Start(liczbaIteracji);
+                for (int i = 0; i < workingThreads.Count; i++ )
+                {
+                    workingThreads[i] = new Thread(startLearning);
+                    workingThreads[i].Start(liczbaIteracji);
+                }
             }
             catch (ArgumentException)
             {
@@ -152,7 +159,11 @@ namespace PropagacjaWsteczna
             startButton.IsEnabled = true;
             stopButton.IsEnabled = false;
 
-            workingThread.Abort();
+            
+            for (int i = 0; i < workingThreads.Count; i++ )
+            {
+                workingThreads[i].Abort();
+            }
 
             drawingThread = new Thread(startDrawing);
             drawingThread.Start();
@@ -183,7 +194,10 @@ namespace PropagacjaWsteczna
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            workingThread.Abort();
+            for (int i = 0; i < workingThreads.Count; i++)
+            {
+                workingThreads[i].Abort();
+            }
             drawingThread.Abort();
         }
 
@@ -192,35 +206,43 @@ namespace PropagacjaWsteczna
         /// Wczytuje obraz wejściowy i zamienia każdy piksel na odpowiedni 
         /// przykład wejściowy.
         /// </summary>
-        private void createLearningExamples()
+        private void createLearningExamples(int input)
         {
             //MessageBox.Show("Liczba przykładów uczących: " + img.Width * img.Height, "Tworzenie przykładów");
+            examples = new List<LearningExample>();
             for (int i = 0; i < img.Width; i++)
             {
                 for (int j = 0; j < img.Height; j++)
                 {
-                    PerceptronLib.Vector point = new PerceptronLib.Vector(15);
+                    PerceptronLib.Vector point = new PerceptronLib.Vector(input);
+                    point[0] = 1;
                     point[1] = i;
                     point[2] = j;
-                    point[3] = Math.Sin(point[1]);
-                    point[4] = Math.Sin(point[2]);
-                    point[5] = Math.Sin(point[1] + point[2]);
-                    point[6] = Math.Sin(2 * point[1] + point[2]);
-                    point[7] = Math.Sin(point[1] + 2 * point[2]);
-                    point[8] = Math.Sin(point[1] * point[1]);
-                    point[9] = Math.Sin(point[2] * point[2]);
-                    point[10] = Math.Sin(2 * (point[1] + point[2]));
-                    point[11] = Math.Sin(2 * point[1]);
-                    point[12] = Math.Sin(3 * point[1]);
-                    point[13] = Math.Sin(2 * point[2]);
-                    point[14] = Math.Sin(3 * point[2]);
+                    for (int k = 0; k < (input - 3) / 2 - 1; k++)
+                    {
+                        point[2 * k + 3] = Math.Abs(Math.Sin((k + 1) * point[1]));
+                        point[2 * k + 4] = Math.Abs(Math.Sin((k + 1) * point[2]));
+                    }
+                    //point[3] = Math.Sin(point[1]);
+                    //point[4] = Math.Sin(point[2]);
+                    //point[5] = Math.Sin(point[1] + point[2]);
+                    //point[6] = Math.Sin(2 * point[1] + point[2]);
+                    //point[7] = Math.Sin(point[1] + 2 * point[2]);
+                    //point[8] = Math.Sin(point[1] * point[1]);
+                    //point[9] = Math.Sin(point[2] * point[2]);
+                    //point[10] = Math.Sin(2 * (point[1] + point[2]));
+                    //point[11] = Math.Sin(2 * point[1]);
+                    //point[12] = Math.Sin(3 * point[1]);
+                    //point[13] = Math.Sin(2 * point[2]);
+                    //point[14] = Math.Sin(3 * point[2]);
 
                     PerceptronLib.Vector value = new PerceptronLib.Vector(4);
                     value[1] = normalizeByte(img.GetPixel(i, j).R);
                     value[2] = normalizeByte(img.GetPixel(i, j).G);
                     value[3] = normalizeByte(img.GetPixel(i, j).B);
                     
-                    //value.round();
+                    value.round();
+                    point.round();
                     //value[1] = (double)(img.GetPixel(i, j).R);
                     //value[2] = (double)(img.GetPixel(i, j).G);
                     //value[3] = (double)(img.GetPixel(i, j).B);
@@ -427,10 +449,10 @@ namespace PropagacjaWsteczna
         private void createNetwork()
         {
             konsola.Text = "";
-            createLearningExamples(); 
             List<int> lista = parseTopology((string)topologiaCombo.SelectedItem);
             int input = lista[0] + 1;
             lista.RemoveAt(0);
+            createLearningExamples(input);
             network = new MLPNetwork(input, lista, perceptronCreated, layerCreated, examples);
             network.OnPerceptronCreated += new PerceptronEvent(perceptronCreated);
             network.OnNetworkLearned += networkLearned;
