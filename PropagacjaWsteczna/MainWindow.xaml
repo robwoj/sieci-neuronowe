@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Rozpoznawanie obrazu" Height="368" Width="639" Loaded="Window_Loaded" KeyDown="Window_KeyDown" Closing="Window_Closing">
-    <Grid>
+    <Grid Name="mainGrid">
         <Image Height="140" HorizontalAlignment="Left" Margin="12,33,0,0" Name="sourceImg" Stretch="Fill" VerticalAlignment="Top" Width="140" Source="Resources/cavalier.jpg" />
         <Label Content="Obraz wejściowy" Height="28" HorizontalAlignment="Left" Margin="12,12,0,0" Name="sourceLabel" VerticalAlignment="Top" />
         <Label Content="Obraz wyjściowy" Height="28" HorizontalAlignment="Left" Margin="293,12,0,0" Name="destLabel" VerticalAlignment="Top" />
@@ -17,9 +17,7 @@
         <TextBox Margin="439,34,12,12" Name="konsola" VerticalScrollBarVisibility="Auto" />
         <ProgressBar Height="10" HorizontalAlignment="Left" Margin="12,244,0,0" Name="progressBar" VerticalAlignment="Top" Width="275" />
         <Label Content="" Height="28" HorizontalAlignment="Left" Margin="293,215,0,0" Name="timeLabel" VerticalAlignment="Top" Width="140" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="158,150,0,0" Name="betaText" VerticalAlignment="Top" Width="57" />
-        <Label Content="Beta" Height="28" HorizontalAlignment="Left" Margin="158,126,0,0" Name="label1" VerticalAlignment="Top" />
-        <TextBox Height="23" HorizontalAlignment="Left" Margin="221,150,0,0" Name="etaText" VerticalAlignment="Top" Width="66" />
-        <Label Content="Eta" Height="28" HorizontalAlignment="Left" Margin="221,126,0,0" Name="label2" VerticalAlignment="Top" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="158,150,0,0" Name="etaText" VerticalAlignment="Top" Width="129" />
+        <Label Content="Eta" Height="28" HorizontalAlignment="Left" Margin="158,127,0,0" Name="label2" VerticalAlignment="Top" />
     </Grid>
 </Window>

@@ -255,7 +255,7 @@ namespace MLPNetworkLib
         public Vector classify(LearningExample example)
         {
             LearningExample newExample = example;
-            classificationExamples = new List<LearningExample>();
+            classificationExamples = new List<LearningExample>(layers.Count);
 
             // Przechodzi kolejno przez wszystkie warstwy sieci
             for (int i = 0; i < layers.Count; i++)
@@ -283,7 +283,7 @@ namespace MLPNetworkLib
         /// <summary>
         /// Uczy sieć za pomocą propagacji wstecznej
         /// </summary>
-        public void learnNetwork(int iterations, double learningConstant, double betaConstant)
+        public void learnNetwork(int iterations, double learningConstant)
         {
 
             if (examples.Count == 0)
@@ -293,12 +293,11 @@ namespace MLPNetworkLib
 
             Random r = new Random();
             double eta = learningConstant;
-            double mi = 0.1;
+            //double mi = 0.1;
             foreach (UniqueLayer l in layers)
             {
                 foreach (Perceptron p in l.Perceptrons)
                 {
-                    p.Beta = betaConstant;
                     p.Weights.round();
                 }
             }
@@ -308,101 +307,106 @@ namespace MLPNetworkLib
             /// classificationExamples[0].Example 
             /// </code>
             Vector output;
-
-            for (int i = 0; i < iterations; i++)
+            double lastError = globalError();
+            //const double c = 1.05;
+            int interval = iterations / 10000;
+            for (int z = 0; z < iterations / 10000; z++)
             {
-                // Inicjalizacja testowego wektora delt
-                delty = new List<Vector>();
-                // Obecnie rozważany przykład
-                LearningExample ex = examples[r.Next(examples.Count)];
-
-                classify(ex);
-
-                // Trzeba utworzyc wektory pamiętające wartości delta
-                Vector delta = new Vector(classificationExamples.Last().Example.Dimension);
-                Vector newDelta;
-
-                // Zmienne pomocnicze
-                Vector lastExapmle = classificationExamples.Last().Example;
-                Vector expected = classificationExamples[0].ExpectedValue;
-
-                // Utworzenie wartości delta dla warstwy ostatniej
-                for (int j = 1; j < lastExapmle.Dimension; j++)
+                for (int i = 0; i < 10000; i++)
                 {
-                    if (i > 10000)
+                    // Inicjalizacja testowego wektora delt
+                    delty = new List<Vector>(layers.Count);
+                    // Obecnie rozważany przykład
+                    LearningExample ex = examples[r.Next(examples.Count)];
+
+                    classify(ex);
+
+                    // Trzeba utworzyc wektory pamiętające wartości delta
+                    Vector delta = new Vector(classificationExamples.Last().Example.Dimension);
+                    Vector newDelta;
+
+                    // Zmienne pomocnicze
+                    Vector lastExapmle = classificationExamples.Last().Example;
+                    Vector expected = classificationExamples[0].ExpectedValue;
+
+
+                    // Utworzenie wartości delta dla warstwy ostatniej
+                    for (int j = 1; j < lastExapmle.Dimension; j++)
                     {
-                        mes("Błąd wynosi " + (lastExapmle[j] - expected[j])
-                            + "\nPochodna wynosi " + lastExapmle[j] * (1 - lastExapmle[j]));
+                        //if (i > 10000)
+                        //{
+                        //    mes("Błąd wynosi " + (lastExapmle[j] - expected[j])
+                        //        + "\nPochodna wynosi " + lastExapmle[j] * (1 - lastExapmle[j]));
+                        //}
+                        delta[j] = (lastExapmle[j] - expected[j]) * // Błąd
+                            lastExapmle[j] * (1 - lastExapmle[j]); // Pochodna
+                        //Console.WriteLine("(" + expected[j].ToString() + " - " + lastExapmle[j] + ")"
+                        //    + " * " + (lastExapmle[j] * (1 - lastExapmle[j])) + " = " + delta[j]);
                     }
-                    delta[j] = (lastExapmle[j] - expected[j]) * // Błąd
-                        lastExapmle[j] * (1 - lastExapmle[j]); // Pochodna
-                    //Console.WriteLine("(" + expected[j].ToString() + " - " + lastExapmle[j] + ")"
-                    //    + " * " + (lastExapmle[j] * (1 - lastExapmle[j])) + " = " + delta[j]);
-                }
 
-                //delta.round();
-                // Obliczenie wartości delta dla warstw niższych
-                // oraz odpowiednich wag
-                delty.Add(delta);
-                for (int j = layers.Count - 2; j >= 0; j--)
-                {
-                    output = classificationExamples[j].Example;
-                    //output.round();
-                    newDelta = new Vector(output.Dimension);
-                    newDelta.zeros();
-                    for (int k = 1; k < classificationExamples[j + 1].Example.Dimension; k++)
+                    //delta.round();
+                    // Obliczenie wartości delta dla warstw niższych
+                    // oraz odpowiednich wag
+                    delty.Add(delta);
+                    for (int j = layers.Count - 2; j >= 0; j--)
                     {
-                        // Perceptron zwracający ui
-                        Perceptron p = layers[j + 1].Perceptrons[k - 1];
-                        for (int l = 1; l <= layers[j].Perceptrons.Count; l++)
+                        output = classificationExamples[j].Example;
+                        //output.round();
+                        newDelta = new Vector(output.Dimension);
+                        newDelta.zeros();
+                        for (int k = 1; k < classificationExamples[j + 1].Example.Dimension; k++)
                         {
-                            newDelta[l] += delta[k] * p.Weights[l]
-                                * output[l] * (1 - output[l]); // Pochodna
+                            // Perceptron zwracający ui
+                            Perceptron p = layers[j + 1].Perceptrons[k - 1];
+                            for (int l = 1; l <= layers[j].Perceptrons.Count; l++)
+                            {
+                                newDelta[l] += delta[k] * p.Weights[l]
+                                    * output[l] * (1 - output[l]); // Pochodna
+                            }
                         }
+
+                        //newDelta.round();
+                        // Przyjmujemy nowy wektor delta
+                        delta = newDelta;
+                        delty.Insert(0, delta);
+
                     }
-
-                    //newDelta.round();
-                    // Przyjmujemy nowy wektor delta
-                    delta = newDelta;
-                    delty.Insert(0, delta);
-
-                }
 
 #if DEBUG
                 string str = ""; 
 #endif
-                for (int j = -1; j < layers.Count - 1; j++)
-                {
-                    if (j >= 0)
+                    for (int j = -1; j < layers.Count - 1; j++)
                     {
-                        output = classificationExamples[j].Example;
-                    }
-                    else
-                    {
-                        output = ex.Example;
-                    }
+                        if (j >= 0)
+                        {
+                            output = classificationExamples[j].Example;
+                        }
+                        else
+                        {
+                            output = ex.Example;
+                        }
 
-                    for (int k = 0; k < layers[j + 1].OutputDimension - 1; k++)
-                    {
-                        Perceptron p = layers[j + 1].Perceptrons[k];
+                        for (int k = 0; k < layers[j + 1].OutputDimension - 1; k++)
+                        {
+                            Perceptron p = layers[j + 1].Perceptrons[k];
 #if DEBUG
 		                Vector tmp = new Vector(p.Dimension);
   
 #endif
-                        for (int l = 0; l < output.Dimension; l++)
-                        {
-                            //if (i > 10000)
-                            //{
-                            //    mes("u: " + output[l].ToString() + ", u': " + (output[l] * (1 - output[l])).ToString()
-                            //        + ", d: " + delty[j + 1][k + 1].ToString());
-                            //}
-                            p.Weights[l] -= eta * delty[j + 1][k + 1] * output[l]
-                                * (1 - mi)
-                                + mi * (p.Weights[l] - p.LastWeights[l]);
+                            for (int l = 0; l < output.Dimension; l++)
+                            {
+                                //if (i > 10000)
+                                //{
+                                //    mes("u: " + output[l].ToString() + ", u': " + (output[l] * (1 - output[l])).ToString()
+                                //        + ", d: " + delty[j + 1][k + 1].ToString());
+                                //}
+                                p.Weights[l] -= eta * delty[j + 1][k + 1] * output[l];
+                                    //* (1 - mi)
+                                    //+ mi * (p.Weights[l] - p.LastWeights[l]);
 
-                            p.LastWeights[l] = p.Weights[l];
+                                //p.LastWeights[l] = p.Weights[l];
 
-                            // Dla testowania
+                                // Dla testowania
 #if DEBUG
                             if (i == 10000)
                             {
@@ -410,24 +414,24 @@ namespace MLPNetworkLib
                             }
 
 #endif
-                        }
-                        //p.Weights.round();
+                            }
+                            //p.Weights.round();
 
 #if DEBUG
-                        if(i == 10000)
+
                             //str += tmp.ToString() + "\n";
 
 #endif
+                        }
                     }
-                }
 
 #if DEBUG
                 if (i == 10000) mes(str); 
 #endif
-                if (OnLearningIterationEnded != null && i % 10000 == 0)
-                    OnLearningIterationEnded(this, new NetworkLearningIterationEventArgs(this, i));
+                }
+                if (OnLearningIterationEnded != null)
+                    OnLearningIterationEnded(this, new NetworkLearningIterationEventArgs(this, z * 10000));
             }
-
 
             if (OnNetworkLearned != null) OnNetworkLearned(this, new NetworkEventArgs(this));
         }

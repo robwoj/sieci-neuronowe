@@ -55,13 +55,12 @@ namespace PropagacjaWsteczna
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             etaText.Text = (0.5).ToString();
-            betaText.Text = (0.005).ToString();
 
             iteracjaText.Text = 10000000.ToString();
             lastTime = DateTime.Now;
             lastIterNum = 0;
 
-            topologiaCombo.Items.Add("2-64-32-32-3");
+            topologiaCombo.Items.Add("18-32-32-32-3");
             topologiaCombo.Items.Add("120-64-32-3");
             topologiaCombo.Items.Add("30-32-32-3");
             topologiaCombo.Items.Add("2-32-32-3");
@@ -81,7 +80,6 @@ namespace PropagacjaWsteczna
             setErrorTextDelegate += setErrorText;
             setProgressValueDelegate += setProgressValue;
             printLineDelegate += printLine;
-            getBetaDelegate += getBeta;
             getEtaDelegate += getEta;
 
             createdPerceptronsCount = 0;
@@ -187,9 +185,8 @@ namespace PropagacjaWsteczna
                 throw new InvalidCastException("Liczba iteracji musi być liczbą typu int");
             }
 
-            network.learnNetwork((int)iterations, 
-                (double)Dispatcher.Invoke(getEtaDelegate), 
-                (double)Dispatcher.Invoke(getBetaDelegate));
+            network.learnNetwork((int)iterations,
+                (double)Dispatcher.Invoke(getEtaDelegate));
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -201,134 +198,6 @@ namespace PropagacjaWsteczna
             drawingThread.Abort();
         }
 
-        /// <summary>
-        /// Funkcja przeznaczona do kontruowania zbioru przykładów uczących.
-        /// Wczytuje obraz wejściowy i zamienia każdy piksel na odpowiedni 
-        /// przykład wejściowy.
-        /// </summary>
-        private void createLearningExamples(int input)
-        {
-            //MessageBox.Show("Liczba przykładów uczących: " + img.Width * img.Height, "Tworzenie przykładów");
-            examples = new List<LearningExample>();
-            for (int i = 0; i < img.Width; i++)
-            {
-                for (int j = 0; j < img.Height; j++)
-                {
-                    PerceptronLib.Vector point = new PerceptronLib.Vector(input);
-                    point[0] = 1;
-                    point[1] = i;
-                    point[2] = j;
-                    for (int k = 0; k < (input - 3) / 2 - 1; k++)
-                    {
-                        point[2 * k + 3] = Math.Abs(Math.Sin((k + 1) * point[1]));
-                        point[2 * k + 4] = Math.Abs(Math.Sin((k + 1) * point[2]));
-                    }
-                    //point[3] = Math.Sin(point[1]);
-                    //point[4] = Math.Sin(point[2]);
-                    //point[5] = Math.Sin(point[1] + point[2]);
-                    //point[6] = Math.Sin(2 * point[1] + point[2]);
-                    //point[7] = Math.Sin(point[1] + 2 * point[2]);
-                    //point[8] = Math.Sin(point[1] * point[1]);
-                    //point[9] = Math.Sin(point[2] * point[2]);
-                    //point[10] = Math.Sin(2 * (point[1] + point[2]));
-                    //point[11] = Math.Sin(2 * point[1]);
-                    //point[12] = Math.Sin(3 * point[1]);
-                    //point[13] = Math.Sin(2 * point[2]);
-                    //point[14] = Math.Sin(3 * point[2]);
-
-                    PerceptronLib.Vector value = new PerceptronLib.Vector(4);
-                    value[1] = normalizeByte(img.GetPixel(i, j).R);
-                    value[2] = normalizeByte(img.GetPixel(i, j).G);
-                    value[3] = normalizeByte(img.GetPixel(i, j).B);
-                    
-                    value.round();
-                    point.round();
-                    //value[1] = (double)(img.GetPixel(i, j).R);
-                    //value[2] = (double)(img.GetPixel(i, j).G);
-                    //value[3] = (double)(img.GetPixel(i, j).B);
-                    LearningExample ex = new LearningExample(point, value);
-
-                    examples.Add(ex);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Funkcja przeznaczona do normalizacji koloru
-        /// </summary>
-        private double normalizeByte(byte b)
-        {
-            return (double)(b) / 256.0F;
-        }
-
-        /// <summary>
-        /// Funkcja przeznaczona do denormalizacji koloru
-        /// </summary>
-        private byte deNormalizeDouble(double d)
-        {
-            return (byte)(d * 256.0F);
-        }
-
-        /// <summary>
-        /// Funkcja przeznaczona do drukowania obrazu przedstawianego przez nauczoną sieć
-        /// </summary>
-        private void printLearnedImage()
-        {
-            //Bitmap source = (Bitmap)System.Drawing.Image.FromFile("cavalier.jpg");
-            //img = new Bitmap(source.Width, source.Height);
-
-            //MessageBox.Show("Rozmiar wejścia: " + img.Width + "x" + 
-            //    img.Height, "Rozpoczynanie odczytywania");
-
-            Dispatcher.Invoke(printLineDelegate, "Rysowanie obrazu...");
-            for (int i = 0; i < img.Width; i++)
-            {
-                
-                for (int j = 0; j < img.Height; j++)
-                {
-                    //PerceptronLib.Vector point = new PerceptronLib.Vector(3);
-                    //point[1] = i;
-                    //point[2] = j;
-
-                    //LearningExample ex = new LearningExample(point, new PerceptronLib.Vector());
-                    PerceptronLib.Vector result;
-                    lock(network)
-                    {
-                        result = network.classify(examples[i * img.Height + j]);
-                    }
-
-                    //MessageBox.Show(result.ToString());
-                    System.Drawing.Color c = System.Drawing.Color.FromArgb(255, deNormalizeDouble(result[1]),
-                        deNormalizeDouble(result[2]), deNormalizeDouble(result[3]));
-                    //System.Drawing.Color c = System.Drawing.Color.FromArgb(255, (byte)(result[1]),
-                    //    (byte)(result[2]), (byte)(result[3]));
-                    img.SetPixel(i, j, c);
-
-                    if (i * img.Height + j < 20)
-                    {
-                        Dispatcher.Invoke(printLineDelegate, result[1].ToString() + ", "
-                            + result[2] + ", " + result[3]);
-                    }
-                    //System.Drawing.Color c = img.GetPixel(i, j);
-                    //Dispatcher.Invoke(printLineDelegate, "R: " + c.R + " G: " + c.G + " B: " + c.B);
-                    //Dispatcher.Invoke(setIterTextDelegate, (i * img.Height + j).ToString()
-                    //    + " / " + img.Width * img.Height);
-                }
-            }
-
-            Dispatcher.Invoke(printLineDelegate, "Zapisywanie pliku...");
-            img.Save("output.bmp");
-            
-            //BitmapImage src = new BitmapImage();
-            //src.BeginInit();
-            //src.UriSource = new Uri("output.bmp", UriKind.Relative);
-            //src.EndInit();
-            //destImg.Source = src;
-            //destImg.Stretch = Stretch.Uniform;
-
-            Dispatcher.Invoke(setImageSoureDelegate, "output.bmp");
-        }
-
         private void setIterText(string str)
         {
             iteracjaText.Text = str;
@@ -336,9 +205,13 @@ namespace PropagacjaWsteczna
 
         private void setImageSource(string fileName)
         {
-            //destImg.BeginInit();
+            System.Windows.Controls.Image img = new System.Windows.Controls.Image();
+            img.BeginInit();
+            img.Source = new BitmapImage(new Uri(fileName, UriKind.Relative));
             //destImg.Source = new BitmapImage(new Uri(fileName, UriKind.Relative));
-            //destImg.EndInit();
+            img.EndInit();
+
+            mainGrid.Children.Add(img);
         }
 
         private void setKonsolaText(string str)
@@ -464,15 +337,10 @@ namespace PropagacjaWsteczna
 
         private delegate double doubleatvoid();
         private doubleatvoid getEtaDelegate;
-        private doubleatvoid getBetaDelegate;
         private double getEta()
         {
             return double.Parse(etaText.Text);
         }
 
-        private double getBeta()
-        {
-            return double.Parse(betaText.Text);
-        }
     }
 }

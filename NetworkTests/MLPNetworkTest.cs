@@ -96,7 +96,7 @@ namespace NetworkTests
 
                 try
                 {
-                    target.learnNetwork(iterations, 0.5, 1);
+                    target.learnNetwork(iterations, 0.5);
                 }
                 catch (ExampleListException)
                 {
@@ -152,7 +152,7 @@ namespace NetworkTests
                     Assert.AreEqual(0.292, v1[1]);
 
                     Console.WriteLine("Blad: " + target.globalError());
-                    target.learnNetwork(1, 0.5, 1);
+                    target.learnNetwork(1, 0.5);
                     Console.WriteLine("Wyjścia kolejnych warstw:");
                     foreach (LearningExample e in target.ClassificationExamples)
                     {
@@ -162,12 +162,12 @@ namespace NetworkTests
                     Vector d0 = new Vector(2);
                     d0[1] = -0.105;
 
-                    Assert.AreEqual(d0.ToString(), round(target.delty[0]).ToString());
+                    Assert.AreEqual(d0.ToString(), round(target.delty[1]).ToString());
 
                     Vector d1 = new Vector(3);
                     d1[1] = 0.019;
                     d1[2] = -0.002;
-                    Assert.AreEqual(d1.ToString(), round(target.delty[1]).ToString());
+                    Assert.AreEqual(d1.ToString(), round(target.delty[0]).ToString());
 
 
                     Console.WriteLine("Wagi pierwszego perceptronu po iteracji:");
@@ -179,7 +179,7 @@ namespace NetworkTests
 
                     for (int i = 0; i < 500; i++)
                     {
-                        target.learnNetwork(iterations, 0.5, 1);
+                        target.learnNetwork(iterations, 0.5);
                         Console.WriteLine("Blad: " + target.globalError());
                     }
                     return;
@@ -209,6 +209,31 @@ namespace NetworkTests
             }
 
             return r;
+        }
+
+        [TestMethod()]
+        public void serializationTest()
+        {
+            List<LearningExample> examples = new List<LearningExample>();
+            List<int> dimensions = new List<int>();
+            dimensions.Add(3);
+            dimensions.Add(3);
+            dimensions.Add(1);
+
+            MLPNetwork network = new MLPNetwork(3, dimensions, null, null, examples);
+
+            //weights[0] = new Vector(3);
+            //weights[0][0] = 0.1;
+            //weights[0][1] = 0.2;
+            //weights[0][2] = 0.3;
+            //weights[1] = new Vector(3);
+            //weights[1][0] = 0.15;
+            //weights[1][1] = 0.26;
+            //weights[1][2] = 0.37;
+            //weights[0] = new Vector(1);
+            //weights[0][0] = 0.4;
+
+
         }
     }
 }

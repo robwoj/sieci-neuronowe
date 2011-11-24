@@ -85,6 +85,10 @@ namespace MLPNetworkLib
             {
                 Perceptron p = new Perceptron(inputDimension, r.Next());
                 perceptrons.Add(p);
+                for (int j = 0; j < p.Weights.Dimension; j++)
+                {
+                    p.Weights[j] /= (double)(perceptronsCount + 1);
+                }
                 if(OnPerceptronCreated != null)
                     OnPerceptronCreated(this, new PerceptronEventArgs(p));
             }

@@ -30,15 +30,15 @@ namespace PerceptronLib
         /// </summary>
         private Vector weights;
 
-        private Vector lastWeights;
+        //private Vector lastWeights;
 
-        public Vector LastWeights
-        {
-            get
-            {
-                return lastWeights;
-            }
-        }
+        //public Vector LastWeights
+        //{
+        //    get
+        //    {
+        //        return lastWeights;
+        //    }
+        //}
 
         /// <summary>
         /// Tworzy nowy perceptron na podstawie zadanego wektora wag
@@ -52,7 +52,6 @@ namespace PerceptronLib
 
             weights = weightVector;
             outputFunctionDelegate = biasFunction;
-            beta = 1;
         }
 
         /// <summary>
@@ -68,10 +67,9 @@ namespace PerceptronLib
                 weights[i] = r.NextDouble();
             }
             outputFunctionDelegate = biasFunction;
-            beta = 1;
 
             //weights.round();
-            lastWeights = weights;
+            //lastWeights = weights;
         }
 
         /// <summary>
@@ -237,20 +235,6 @@ namespace PerceptronLib
             }
         }
 
-        private double beta;
-
-        public double Beta
-        {
-            get
-            {
-                return beta;
-            }
-            set
-            {
-                beta = value;
-            }
-        }
-
         /// <summary>
         /// Sigmoidalna funkcja wyjścia
         /// </summary>
@@ -260,7 +244,7 @@ namespace PerceptronLib
             //if (1 / (1 + Math.Exp(-beta * (input * weights))) <= 0.00001
             //    || 1 / (1 + Math.Exp(-beta * (input * weights))) >= 0.99999)
             //    throw new Exception("Iloczyn bliski zeru");
-            return 1 / (1 + Math.Exp(-beta * (input * weights)));
+            return 1 / (1 + Math.Exp(-(input * weights)));
         }
 
         /// <summary>
