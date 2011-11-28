@@ -5,5 +5,6 @@
     <Grid>
         <Button Content="Otwórz..." Height="23" HorizontalAlignment="Left" Margin="16,14,0,0" Name="openButton" VerticalAlignment="Top" Width="75" Click="openButton_Click" />
         <TextBox Margin="106,12,12,12" Name="konsola" />
+        <Button Content="Redukuj" Height="23" HorizontalAlignment="Left" Margin="16,43,0,0" Name="learnButton" VerticalAlignment="Top" Width="75" Click="learnButton_Click" />
     </Grid>
 </Window>
