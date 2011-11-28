@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropagacjaWstecznaTests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkTests", "NetworkTests\NetworkTests.csproj", "{F44EE478-4A83-40EC-BD82-4F2EB596A491}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RozpoznawanieTwarzy", "RozpoznawanieTwarzy\RozpoznawanieTwarzy.csproj", "{2FCBD524-D563-4E79-9C3D-2A0B16382387}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Perceptron1.vsmdi
@@ -106,6 +108,16 @@ Global
 		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{F44EE478-4A83-40EC-BD82-4F2EB596A491}.Release|x86.ActiveCfg = Release|Any CPU
+		{2FCBD524-D563-4E79-9C3D-2A0B16382387}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{2FCBD524-D563-4E79-9C3D-2A0B16382387}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{2FCBD524-D563-4E79-9C3D-2A0B16382387}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{2FCBD524-D563-4E79-9C3D-2A0B16382387}.Debug|x86.ActiveCfg = Debug|x86
+		{2FCBD524-D563-4E79-9C3D-2A0B16382387}.Debug|x86.Build.0 = Debug|x86
+		{2FCBD524-D563-4E79-9C3D-2A0B16382387}.Release|Any CPU.ActiveCfg = Release|x86
+		{2FCBD524-D563-4E79-9C3D-2A0B16382387}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{2FCBD524-D563-4E79-9C3D-2A0B16382387}.Release|Mixed Platforms.Build.0 = Release|x86
+		{2FCBD524-D563-4E79-9C3D-2A0B16382387}.Release|x86.ActiveCfg = Release|x86
+		{2FCBD524-D563-4E79-9C3D-2A0B16382387}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
