@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using System.IO;
 using PerceptronLib;
 using System.Drawing;
+using System.Threading;
 namespace RozpoznawanieTwarzy
 {
     /// <summary>
@@ -27,6 +28,12 @@ namespace RozpoznawanieTwarzy
         private int iterations;
         private int examplesWidth;
         private int examplesHeight;
+
+        Thread creatingExamplesThread;
+        Thread savingImagesThread;
+        Thread reducingThread;
+        List<FileInfo> files;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -35,9 +42,13 @@ namespace RozpoznawanieTwarzy
 
             learnButton.IsEnabled = false;
             iterations = 100;
-            //openDialog.Filter = "Plik JPEG (*.jpg)|*.jpg";
-            //openDialog.FilterIndex = 1;
-            
+            printLineDelegate = printLine;
+            saveImagesDelegate = saveImages;
+            createLearningExamplesDelegate = createLearningExamples;
+            getFilesDelegate = getFiles;
+            setExamplesDelegate = setExamples;
+            OnStateChange = stateChange;    
+            files = null;
         }
 
         private void openButton_Click(object sender, RoutedEventArgs e)
@@ -58,7 +69,7 @@ namespace RozpoznawanieTwarzy
                     return;
                 }
 
-                List<FileInfo> files = new List<FileInfo>();
+                files = new List<FileInfo>();
                 foreach (FileInfo f in di.GetFiles())
                 {
                     if (f.Extension.ToLower() == ".jpg")
@@ -68,12 +79,61 @@ namespace RozpoznawanieTwarzy
                     }
                 }
 
-                examples = createLearningExamples(files);
+                creatingExamplesThread = new Thread(startCreatingExamples);
+                creatingExamplesThread.Start();
+                
+                //creatingExamplesThread.Join();
+                //examples = createLearningExamples(files);
 
-                if (examples != null)
-                    learnButton.IsEnabled = true;
             }
         }
+
+        private delegate void stateEvent(object sender, EventArgs e);
+
+        private void stateChange(object sender, EventArgs e)
+        {
+            if (examples != null)
+                learnButton.IsEnabled = true;
+        }
+
+        private event stateEvent OnStateChange;
+        
+        private List<FileInfo> getFiles()
+        {
+            if (files == null)
+            {
+                throw new Exception("Nie wczytano plików");
+            }
+            else
+            {
+                return files;
+            }
+        }
+
+        private void setExamples(List<LearningExample> examplesList)
+        {
+            examples = examplesList;
+        }
+
+        private delegate void voidatexamplelist(List<LearningExample> exampleList);
+        private voidatexamplelist setExamplesDelegate;
+        private delegate List<FileInfo> fileinfolistatvoid();
+        private fileinfolistatvoid getFilesDelegate; 
+
+        private void startCreatingExamples()
+        {
+            List<LearningExample> exList = 
+                createLearningExamples((List<FileInfo>)Dispatcher.Invoke(getFilesDelegate));
+
+            Dispatcher.Invoke(setExamplesDelegate, exList);
+
+            Dispatcher.Invoke(OnStateChange, this, new EventArgs());
+        }
+
+        private delegate void imageSaveFunc(List<Perceptron> vectors, int width, int height);
+
+        private imageSaveFunc saveImagesDelegate;
+
         /// <summary>
         /// Zapisuje utworzone obrazy na dysku
         /// </summary>
@@ -99,6 +159,11 @@ namespace RozpoznawanieTwarzy
             }
         }
 
+
+        private delegate List<LearningExample> examplesCreatingFunc(List<FileInfo> files);
+
+        private examplesCreatingFunc createLearningExamplesDelegate;
+
         /// <summary>
         /// Tworzy listę przykładów uczących na podstawie obrazów wczytanych z dysku
         /// </summary>
@@ -112,8 +177,8 @@ namespace RozpoznawanieTwarzy
                 examplesWidth = bitmap.Width;
                 examplesHeight = bitmap.Height;
 
-                printLine(f.Name + ": " + bitmap.Width + "x" + bitmap.Height);
-
+                //printLine(f.Name + ": " + bitmap.Width + "x" + bitmap.Height);
+                Dispatcher.Invoke(printLineDelegate, f.Name + ": " + bitmap.Width + "x" + bitmap.Height);
                 Perceptron p = new Perceptron(bitmap.Width * bitmap.Height);
 
                 int width = bitmap.Width;
@@ -144,8 +209,8 @@ namespace RozpoznawanieTwarzy
                     }
                 }
 
-                printLine("Max = " + max + ", Min = " + min + ", Sum = " + sum
-                    + ", " + medium);
+                //printLine("Max = " + max + ", Min = " + min + ", Sum = " + sum
+                //    + ", " + medium);
                 examples.Add(new LearningExample(p.Weights, 0));
             }
 
