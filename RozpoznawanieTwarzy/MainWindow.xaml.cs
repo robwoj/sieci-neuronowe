@@ -196,7 +196,7 @@ namespace RozpoznawanieTwarzy
                     PerceptronLib.Vector nextExVector = new PerceptronLib.Vector(dimension);
                     for (int j = 0; j < dimension; j++)
                     {
-                        nextExVector[j] = ex.Example[j] - p.Weights[j] * val / activation;
+                        nextExVector[j] = ex.Example[j] - p.Weights[j] * activation / val;
                     }
                     LearningExample nextEx = new LearningExample(nextExVector, 0);
                     nextList.Add(nextEx);
