@@ -34,7 +34,7 @@ namespace RozpoznawanieTwarzy
             openDialog.Description = "Podaj katalog z przykładami";
 
             learnButton.IsEnabled = false;
-            iterations = 10;
+            iterations = 100;
             //openDialog.Filter = "Plik JPEG (*.jpg)|*.jpg";
             //openDialog.FilterIndex = 1;
             
@@ -74,7 +74,9 @@ namespace RozpoznawanieTwarzy
                     learnButton.IsEnabled = true;
             }
         }
-
+        /// <summary>
+        /// Zapisuje utworzone obrazy na dysku
+        /// </summary>
         private void saveImages(List<Perceptron> vectors, int width, int height)
         {
             for (int k = 0; k < vectors.Count; k++ )
@@ -87,7 +89,7 @@ namespace RozpoznawanieTwarzy
                     for (int j = 0; j < height; j++)
                     {
                         int index = i * height + j;
-                        byte color = (byte)(p.Weights[index] * 256.0F);
+                        byte color = (byte)(p.Weights[index] * 256.0F * width * height);
                         System.Drawing.Color c = System.Drawing.Color.FromArgb(255, color, color, color);
                         img.SetPixel(i, j, c);
                     }
@@ -97,10 +99,13 @@ namespace RozpoznawanieTwarzy
             }
         }
 
+        /// <summary>
+        /// Tworzy listę przykładów uczących na podstawie obrazów wczytanych z dysku
+        /// </summary>
         private List<LearningExample> createLearningExamples(List<FileInfo> files)
         {
             List<LearningExample> examples = new List<LearningExample>();
-
+            double sum = 0.0F;
             foreach (FileInfo f in files)
             {
                 Bitmap bitmap = (Bitmap)Bitmap.FromFile(f.FullName);
@@ -120,19 +125,37 @@ namespace RozpoznawanieTwarzy
                     for (int j = 0; j < height; j++)
                     {
                         int index = i * height + j;
-                        p.Weights[index] = (double)bitmap.GetPixel(i, j).R / 256.0F;
-                        //if (min > p.Weights[index]) min = p.Weights[index];
-                        //if (max < p.Weights[index]) max = p.Weights[index];
+                        p.Weights[index] = (double)bitmap.GetPixel(i, j).R / (256.0F * width * height);
+                        sum += p.Weights[index];
+                        if (min > p.Weights[index]) min = p.Weights[index];
+                        if (max < p.Weights[index]) max = p.Weights[index];
+
+
+                    }
+                }
+                double medium = sum / (double)(width * height);
+
+                for (int i = 0; i < width; i++)
+                {
+                    for (int j = 0; j < height; j++)
+                    {
+                        int index = i * height + j;
+                        p.Weights[index] -= medium;
                     }
                 }
 
-                printLine("Max = " + max + ", Min = " + min);
+                printLine("Max = " + max + ", Min = " + min + ", Sum = " + sum
+                    + ", " + medium);
                 examples.Add(new LearningExample(p.Weights, 0));
             }
 
             return examples;
         }
 
+        /// <summary>
+        /// Reakcja na zdarzenie naciśnięcia przycisku, przeznaczona do szybkiego zamykania aplikacji
+        /// za pomocą Escape
+        /// </summary>
         private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
@@ -141,15 +164,18 @@ namespace RozpoznawanieTwarzy
             }
         }
 
+        /// <summary>
+        /// Algorytm redukcji slładowych głównych
+        /// </summary>
         private void reduction(List<LearningExample> exampleList)
         {
             List<LearningExample> list = exampleList;
             int dimension = exampleList[0].Example.Dimension;
-            int m = 6;
+            int m = 2;
             List<Perceptron> principalComponents = new List<Perceptron>(m);
             for (int i = 0; i < m; i++)
             {
-                printLine("i = " + i);
+                //printLine("i = " + i);
                 //Perceptron p = new Perceptron(dimension);
                 //for (int j = 0; j < dimension; j++)
                 //{
@@ -159,14 +185,14 @@ namespace RozpoznawanieTwarzy
                 //printLine("[" + p.Weights[0] + ";" + p.Weights[1] + ";" + p.Weights[2] + "]");
                 principalComponents.Add(ojLearn(list));
                 Perceptron p = principalComponents[i];
-                printLine("[" + p.Weights[0] + ";" + p.Weights[1] + ";" + p.Weights[2] + "]");
+                //printLine("[" + p.Weights[0] + ";" + p.Weights[1] + ";" + p.Weights[2] + "]");
                 List<LearningExample> nextList = new List<LearningExample>();
                 foreach (LearningExample ex in list)
                 {
                     double val = p.Weights * p.Weights;
                     double activation = p.Weights * ex.Example;
-                    if (activation == 0 || val == 0)
-                        printLine("act = " + activation + ", val = " + val);
+                    //if (activation == 0 || val == 0)
+                    //    printLine("act = " + activation + ", val = " + val);
                     PerceptronLib.Vector nextExVector = new PerceptronLib.Vector(dimension);
                     for (int j = 0; j < dimension; j++)
                     {
@@ -181,37 +207,54 @@ namespace RozpoznawanieTwarzy
             saveImages(principalComponents, examplesWidth, examplesHeight);
         }
 
+        /// <summary>
+        /// Algorytm Oja 
+        /// </summary>
         private Perceptron ojLearn(List<LearningExample> exampleList)
         {
             Random r = new Random();
             double eta = 0.5;
             Perceptron perceptron = new Perceptron(exampleList[0].Example.Dimension);
+            perceptron.Weights.normalizeWeights();
+            printVectorLength(perceptron.Weights);
+
             for (int i = 0; i < iterations; i++)
             {
                 LearningExample ex = exampleList[r.Next(exampleList.Count)];
-                perceptron = new Perceptron(ex.Example.Dimension);
                 double activation = perceptron.Weights * ex.Example * eta;
                 //printLine("oj-ex: [" + ex.Example[0] + ";" + ex.Example[1] + ";"
                 //    + ex.Example[2] + "]");
                                               
-                printLine("act: " + activation);
+                //printLine("act: " + activation);
                 for (int j = 0; j < perceptron.Dimension; j++)
                 {
                     perceptron.Weights[j] += activation * (ex.Example[j] - 
                         activation * perceptron.Weights[j]);
                 }
-                printLine("oj[" + i + "]: [" + perceptron.Weights[0] + ";" + perceptron.Weights[1] + ";"
-                    + perceptron.Weights[2] + "]");
+                //printLine("oj[" + i + "]: [" + perceptron.Weights[0] + ";" + perceptron.Weights[1] + ";"
+                //    + perceptron.Weights[2] + "]");
+                printLine("[" + i + "]: Długość wektora: " + perceptron.Weights.Length);
             }
 
             return perceptron;
         }
 
+        private void printVectorLength(PerceptronLib.Vector v)
+        {
+            printLine("Długość wektora: " + v.Length);
+        }
+
+        /// <summary>
+        /// Drukuje linię na konsoli
+        /// </summary>
         private void printLine(string str)
         {
             konsola.Text += str + "\n";
         }
 
+        /// <summary>
+        /// Obsługa przycisku uczenia
+        /// </summary>
         private void learnButton_Click(object sender, RoutedEventArgs e)
         {
             if (examples != null)
@@ -220,14 +263,16 @@ namespace RozpoznawanieTwarzy
             }
         }
 
+        /// <summary>
+        /// Delegacja do funkcji pobierającej argument string oraz zwracającej void
+        /// </summary>
         private delegate void voidatstring(string str);
 
+        /// <summary>
+        /// Delegacja do funkcji printLine
+        /// </summary>
         private voidatstring printLineDelegate;
 
-        //private void pl(string str)
-        //{
-        //    Dispatcher.Invoke();
-        //}
     }
 }
 

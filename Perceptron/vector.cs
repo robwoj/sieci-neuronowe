@@ -268,5 +268,28 @@ namespace PerceptronLib
                 array[i] = Math.Round(array[i], precision);
             }
         }
+
+        public double Length
+        {
+            get
+            {
+                double sum = 0;
+                for (int j = 0; j < Dimension; j++)
+                {
+                    sum += array[j] * array[j];
+                }
+
+                return Math.Sqrt(sum);
+            }
+        }
+
+        public void normalizeWeights()
+        {
+            double len = Length;
+            for (int i = 0; i < dimension; i++)
+            {
+                array[i] /= len;
+            }
+        }
     }
 }
