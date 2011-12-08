@@ -49,6 +49,7 @@ namespace RozpoznawanieTwarzy
             setExamplesDelegate = setExamples;
             OnStateChange = stateChange;    
             files = null;
+            learnButton.IsEnabled = false;
         }
 
         private void openButton_Click(object sender, RoutedEventArgs e)
@@ -78,6 +79,7 @@ namespace RozpoznawanieTwarzy
                         files.Add(f);
                     }
                 }
+                learnButton.IsEnabled = false;
 
                 creatingExamplesThread = new Thread(startCreatingExamples);
                 creatingExamplesThread.Start();
@@ -298,7 +300,7 @@ namespace RozpoznawanieTwarzy
                 }
                 //printLine("oj[" + i + "]: [" + perceptron.Weights[0] + ";" + perceptron.Weights[1] + ";"
                 //    + perceptron.Weights[2] + "]");
-                printLine("[" + i + "]: Długość wektora: " + perceptron.Weights.Length);
+                p("[" + i + "]: Długość wektora: " + perceptron.Weights.Length);
             }
 
             return perceptron;
@@ -306,7 +308,8 @@ namespace RozpoznawanieTwarzy
 
         private void printVectorLength(PerceptronLib.Vector v)
         {
-            printLine("Długość wektora: " + v.Length);
+            //printLine("Długość wektora: " + v.Length);
+            p("Długość wektora: " + v.Length);
         }
 
         /// <summary>
@@ -317,6 +320,11 @@ namespace RozpoznawanieTwarzy
             konsola.Text += str + "\n";
         }
 
+        private void p(string str)
+        {
+            Dispatcher.Invoke(printLineDelegate, str);
+        }
+
         /// <summary>
         /// Obsługa przycisku uczenia
         /// </summary>
@@ -324,7 +332,17 @@ namespace RozpoznawanieTwarzy
         {
             if (examples != null)
             {
-                reduction(examples);
+                reducingThread = new Thread(startReducing);
+                reducingThread.Start(examples);
+                //reduction(examples);
+            }
+        }
+
+        private void startReducing(object exaplesObj)
+        {
+            if (exaplesObj is List<LearningExample>)
+            {
+                reduction((List<LearningExample>)exaplesObj);
             }
         }
 
@@ -337,6 +355,35 @@ namespace RozpoznawanieTwarzy
         /// Delegacja do funkcji printLine
         /// </summary>
         private voidatstring printLineDelegate;
+
+        /// <summary>
+        /// Zapewnia zatrzymanie wątków roboczych
+        /// </summary>
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            try
+            {
+                reducingThread.Abort();
+            }
+            catch (Exception)
+            { }
+            try
+            {
+                savingImagesThread.Abort();
+            }
+            catch (Exception)
+            {
+            }
+
+            try
+            {
+                creatingExamplesThread.Abort();
+            }
+            catch (Exception)
+            {
+                
+            }
+        }
 
     }
 }
