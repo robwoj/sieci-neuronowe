@@ -16,6 +16,9 @@ using System.IO;
 using PerceptronLib;
 using System.Drawing;
 using System.Threading;
+using System.Runtime.CompilerServices;
+
+[assembly:InternalsVisibleTo("RozpoznawanieTwarzyTests")]
 namespace RozpoznawanieTwarzy
 {
     /// <summary>
@@ -25,7 +28,8 @@ namespace RozpoznawanieTwarzy
     {
         private FolderBrowserDialog openDialog;
         private List<LearningExample> examples;
-        private int iterations;
+        internal int ojIterations;
+        internal int outputDimension;
         private int examplesWidth;
         private int examplesHeight;
 
@@ -34,6 +38,15 @@ namespace RozpoznawanieTwarzy
         Thread reducingThread;
         List<FileInfo> files;
 
+        /// <summary>
+        /// Konstruktor przeznaczony dla testu jednostkowego
+        /// </summary>
+        internal MainWindow(int ojIter, int outputDim) : this()
+        {
+            ojIterations = ojIter;
+            outputDimension = outputDim;
+        }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -41,7 +54,7 @@ namespace RozpoznawanieTwarzy
             openDialog.Description = "Podaj katalog z przykładami";
 
             learnButton.IsEnabled = false;
-            iterations = 1000;
+            ojIterations = 1000;
             printLineDelegate = printByDispatcher;
             saveImagesDelegate = saveImages;
             createLearningExamplesDelegate = createLearningExamples;
@@ -52,6 +65,7 @@ namespace RozpoznawanieTwarzy
             OnReductionStarted = reductionStarted;
             files = null;
             learnButton.IsEnabled = false;
+            outputDimension = 1;
         }
 
         private void openButton_Click(object sender, RoutedEventArgs e)
