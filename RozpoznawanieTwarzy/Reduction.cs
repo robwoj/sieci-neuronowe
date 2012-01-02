@@ -64,10 +64,12 @@ namespace RozpoznawanieTwarzy
                     nextList.Add(nextEx);
                 }
                 list = nextList;
+
+                saveImages2(list, examplesWidth, examplesHeight);
             }
 
 
-            saveImages(principalComponents, examplesWidth, examplesHeight);
+            //saveImages(principalComponents, examplesWidth, examplesHeight);
 
             Dispatcher.Invoke(OnReductionFinished, this, new EventArgs());
         }
@@ -86,12 +88,15 @@ namespace RozpoznawanieTwarzy
             Perceptron perceptron = new Perceptron(exampleList[0].Example.Dimension);
             perceptron.Weights.normalizeWeights();
             //printVectorLength(perceptron.Weights);
-
+            
             for (int i = 0; i < ojIterations; i++)
             {
 #if DEBUG
+                if (i % 10 == 0)
+                    printLine("Oj: i = " + i);
                 Console.WriteLine("Algorytm Oja: Wektor: " + perceptron.Weights + " długość: " + perceptron.Weights.Length);
 #endif
+                // Losuje następny przykład uczący
                 LearningExample ex = exampleList[r.Next(exampleList.Count)];
 #if DEBUG
                 Console.WriteLine("Algorytm Oja: Wybrany przykład: " + ex.Example);
@@ -106,10 +111,12 @@ namespace RozpoznawanieTwarzy
                 //printLine("act: " + activation);
                 for (int j = 0; j < perceptron.Dimension; j++)
                 {
-                    perceptron.Weights[j] += eta * activation * (ex.Example[j] -
-                        activation * perceptron.Weights[j]);
+                    perceptron.Weights[j] += eta * activation * ex.Example[j];
                 }
+
+                perceptron.Weights.normalizeWeights();
 #if DEBUG
+
                 Console.WriteLine("Algorytm Oja: " + "wektor główny: "  + perceptron.Weights);
 #endif
                 //printLine("oj[" + i + "]: [" + perceptron.Weights[0] + ";" + perceptron.Weights[1] + ";"

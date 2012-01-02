@@ -65,7 +65,7 @@ namespace RozpoznawanieTwarzy
             OnReductionStarted = reductionStarted;
             files = null;
             learnButton.IsEnabled = false;
-            outputDimension = 1;
+            outputDimension = 5;
         }
 
         private void openButton_Click(object sender, RoutedEventArgs e)
