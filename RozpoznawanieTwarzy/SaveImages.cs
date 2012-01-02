@@ -28,7 +28,7 @@ namespace RozpoznawanieTwarzy
         private void saveImages(List<Perceptron> vectors, int width, int height)
         {
            
-            printLine("Zapuisywanie wyników...");
+            printLine("Zapisywanie wyników...");
             for (int l = 0; l < examples.Count; l++)
             {
                 LearningExample ex = examples[l];
@@ -47,42 +47,73 @@ namespace RozpoznawanieTwarzy
                     }
                     ex = new LearningExample(nextExVector, 0);
 
-                    // Pętla mająca na celu znalezienie minimów i maksimów
-                    double min = Double.MaxValue;
-                    double max = Double.MinValue;
-                    for (int i = 0; i < width; i++)
-                    {
-                        for (int j = 0; j < height; j++)
-                        {
-                            int index = i * height + j;
-
-                            if (ex.Example[index] < min) min = ex.Example[index];
-                            if (ex.Example[index] > max) max = ex.Example[index];
-                        }
-                    }
                     //printLine("Min = " + min + ", Max = " + max);
                     //printLine("Min = " + min + ", Max = " + max);
 
-                    // Górna granica przedziału
-                    double ceiling = max - min;
+                    normalizeRange(ex, 256.0F, width, height);
 
-                    // Mnożnik - dzielimy przez górną część otrzymując przedział [0,1],
-                    // a następnie mnożymy razy 256 żeby wartości były z całego zakresu
-                    // skali szarości
-                    double mult = 256.0F / ceiling;
 
                     for (int i = 0; i < width; i++)
                     {
                         for (int j = 0; j < height; j++)
                         {
                             int index = i * height + j;
-                            byte color = (byte)((ex.Example[index] - min) * mult);
+                            byte color = (byte)(ex.Example[index]);
                             System.Drawing.Color c = System.Drawing.Color.FromArgb(255, color, color, color);
                             img.SetPixel(i, j, c);
                         }
                     }
 
-                    img.Save("output" + (k + 1) + "-" + (l + 1) + ".jpg");
+                    img.Save("output" + (l + 1) + "-" + (k + 1) + ".jpg");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Normalizuje wektor na przedział [0,ceiling]
+        /// </summary>
+        /// <param name="ceiling">
+        /// Górna granica przedziału
+        /// </param>
+        private void normalizeRange(LearningExample ex, double ceiling, int width, int height)
+        {
+            // Pętla mająca na celu znalezienie minimów i maksimów
+            double min = Double.MaxValue;
+            double max = Double.MinValue;
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    int index = i * height + j;
+
+                    if (ex.Example[index] < min) min = ex.Example[index];
+                    if (ex.Example[index] > max) max = ex.Example[index];
+                }
+            }
+
+            // Górna granica przedziału
+            double ceil = max - min;
+
+            // Mnożnik - dzielimy przez górną część otrzymując przedział [0,1],
+            // a następnie mnożymy razy 256 żeby wartości były z całego zakresu
+            // skali szarości
+            double mult = ceiling / ceil;
+
+            modifyEx(ex, min, mult, width, height);
+        }
+
+
+        /// <summary>
+        /// Modyfikuje wartości wektora w celu normalizacji
+        /// </summary>
+        private void modifyEx(LearningExample ex, double min, double mult, int width, int height)
+        {
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    int index = i * height + j; 
+                    ex.Example[index] = (ex.Example[index] - min) * mult;
                 }
             }
         }
