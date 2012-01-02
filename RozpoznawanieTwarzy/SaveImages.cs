@@ -27,72 +27,63 @@ namespace RozpoznawanieTwarzy
         /// </summary>
         private void saveImages(List<Perceptron> vectors, int width, int height)
         {
-            for (int k = 0; k < vectors.Count; k++)
-            {
-                Perceptron p = vectors[k];
-                Bitmap img = new Bitmap(examplesWidth, examplesHeight);
-
-                for (int i = 0; i < width; i++)
-                {
-                    for (int j = 0; j < height; j++)
-                    {
-                        int index = i * height + j;
-                        byte color = (byte)(p.Weights[index] * 256.0F * width * height);
-                        System.Drawing.Color c = System.Drawing.Color.FromArgb(255, color, color, color);
-                        img.SetPixel(i, j, c);
-                        if (i == 0 && j < 50)
-                            printLine("Kolor: " + color);
-                    }
-                }
-
-                img.Save("output" + (k + 1) + ".jpg");
-            }
-        }
-        private void saveImages2(List<LearningExample> vectors, int width, int height)
-        {
+           
             printLine("Zapuisywanie wyników...");
-            for (int k = 0; k < vectors.Count; k++)
+            for (int l = 0; l < examples.Count; l++)
             {
-                LearningExample p = vectors[k];
-                Bitmap img = new Bitmap(examplesWidth, examplesHeight);
-
-
-                // Pętla mająca na celu znalezienie minimów i maksimów
-                double min = Double.MaxValue;
-                double max = Double.MinValue;
-                for (int i = 0; i < width; i++)
+                LearningExample ex = examples[l];
+                int dimension = examples[0].Example.Dimension;
+                for (int k = 0; k < outputDimension; k++)
                 {
-                    for (int j = 0; j < height; j++)
+                    Perceptron p = vectors[k];
+                    Bitmap img = new Bitmap(examplesWidth, examplesHeight);
+
+                    double val = p.Weights * p.Weights;
+                    double activation = p.Weights * ex.Example;
+                    PerceptronLib.Vector nextExVector = new PerceptronLib.Vector(dimension);
+                    for (int j = 0; j < dimension; j++)
                     {
-                        int index = i * height + j;
-
-                        if (p.Example[index] < min) min = p.Example[index];
-                        if (p.Example[index] > max) max = p.Example[index];
+                        nextExVector[j] = ex.Example[j] - p.Weights[j] * activation / val;
                     }
-                }
-                //printLine("Min = " + min + ", Max = " + max);
-                printLine("Min = " + min + ", Max = " + max);
+                    ex = new LearningExample(nextExVector, 0);
 
-                // Górna granica przedziału
-                double ceiling = max - min;
-
-                // Mnożnik - dzielimy przez górną część otrzymując przedział [0,1],
-                // a następnie mnożymy razy 256 żeby wartości były z całego zakresu
-                // skali szarości
-                double mult = 256.0F / ceiling;
-
-                for (int i = 0; i < width; i++)
-                {
-                    for (int j = 0; j < height; j++)
+                    // Pętla mająca na celu znalezienie minimów i maksimów
+                    double min = Double.MaxValue;
+                    double max = Double.MinValue;
+                    for (int i = 0; i < width; i++)
                     {
-                        int index = i * height + j;
-                        byte color = (byte)((p.Example[index] - min) * mult);
-                        System.Drawing.Color c = System.Drawing.Color.FromArgb(255, color, color, color);
-                        img.SetPixel(i, j, c);
-                    }
-                }
+                        for (int j = 0; j < height; j++)
+                        {
+                            int index = i * height + j;
 
-                img.Save("output" + (k + 1) + ".jpg");
+                            if (ex.Example[index] < min) min = ex.Example[index];
+                            if (ex.Example[index] > max) max = ex.Example[index];
+                        }
+                    }
+                    //printLine("Min = " + min + ", Max = " + max);
+                    //printLine("Min = " + min + ", Max = " + max);
+
+                    // Górna granica przedziału
+                    double ceiling = max - min;
+
+                    // Mnożnik - dzielimy przez górną część otrzymując przedział [0,1],
+                    // a następnie mnożymy razy 256 żeby wartości były z całego zakresu
+                    // skali szarości
+                    double mult = 256.0F / ceiling;
+
+                    for (int i = 0; i < width; i++)
+                    {
+                        for (int j = 0; j < height; j++)
+                        {
+                            int index = i * height + j;
+                            byte color = (byte)((ex.Example[index] - min) * mult);
+                            System.Drawing.Color c = System.Drawing.Color.FromArgb(255, color, color, color);
+                            img.SetPixel(i, j, c);
+                        }
+                    }
+
+                    img.Save("output" + (k + 1) + "-" + (l + 1) + ".jpg");
+                }
             }
         }
     }
