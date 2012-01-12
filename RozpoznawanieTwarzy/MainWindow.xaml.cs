@@ -54,7 +54,7 @@ namespace RozpoznawanieTwarzy
             openDialog.Description = "Podaj katalog z przykładami";
 
             learnButton.IsEnabled = false;
-            ojIterations = 1000;
+            ojIterations = 10000;
             printLineDelegate = printByDispatcher;
             saveImagesDelegate = saveImages;
             createLearningExamplesDelegate = createLearningExamples;
@@ -65,7 +65,7 @@ namespace RozpoznawanieTwarzy
             OnReductionStarted = reductionStarted;
             files = null;
             learnButton.IsEnabled = false;
-            outputDimension = 5;
+            outputDimension = 1;
         }
 
         private void openButton_Click(object sender, RoutedEventArgs e)
@@ -209,6 +209,8 @@ namespace RozpoznawanieTwarzy
         {
             if (examples != null)
             {
+                printLine("Rozpoczynanie analizy składowych głównych, "
+                    + outputDimension + " wymiarów, " + ojIterations + " iteracji algorytmu Oja");
                 reducingThread = new Thread(startReducing);
                 reducingThread.Start(examples);
                 //reduction(examples);

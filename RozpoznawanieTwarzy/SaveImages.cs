@@ -33,23 +33,35 @@ namespace RozpoznawanieTwarzy
             {
                 LearningExample ex = examples[l];
                 int dimension = examples[0].Example.Dimension;
+                
                 for (int k = 0; k < outputDimension; k++)
                 {
                     Perceptron p = vectors[k];
                     Bitmap img = new Bitmap(examplesWidth, examplesHeight);
+                    if (l == 0)
+                    {
+                        Bitmap eigenImg = new Bitmap(examplesWidth, examplesHeight);
+                        LearningExample eigenEx = new LearningExample(vectors[k].Weights, 0);
+                        normalizeRange(eigenEx, 256.0F, width, height);
 
+                        for (int i = 0; i < width; i++)
+                        {
+                            for (int j = 0; j < height; j++)
+                            {
+                                int index = i * height + j;
+                                byte color = (byte)(eigenEx.Example[index]);
+                                System.Drawing.Color c = System.Drawing.Color.FromArgb(255, color, color, color);
+                                eigenImg.SetPixel(i, j, c);
+                            }
+                        }
+
+                        eigenImg.Save("eigenVector-" + (k + 1) + ".jpg");
+                    }
                     double val = p.Weights * p.Weights;
                     double activation = p.Weights * ex.Example;
                     PerceptronLib.Vector nextExVector = new PerceptronLib.Vector(dimension);
-                    for (int j = 0; j < dimension; j++)
-                    {
-                        nextExVector[j] = ex.Example[j] - p.Weights[j] * activation / val;
-                    }
+                    nextExVector = ex.Example - p.Weights * (activation / val);
                     ex = new LearningExample(nextExVector, 0);
-
-                    //printLine("Min = " + min + ", Max = " + max);
-                    //printLine("Min = " + min + ", Max = " + max);
-
                     normalizeRange(ex, 256.0F, width, height);
 
 

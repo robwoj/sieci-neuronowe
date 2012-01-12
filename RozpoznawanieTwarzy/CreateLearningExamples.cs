@@ -28,16 +28,16 @@ namespace RozpoznawanieTwarzy
         private List<LearningExample> createLearningExamples(List<FileInfo> files)
         {
             List<LearningExample> examples = new List<LearningExample>();
-            double sum = 0.0F;
             foreach (FileInfo f in files)
             {
+                double sum = 0.0F;
                 Bitmap bitmap = (Bitmap)Bitmap.FromFile(f.FullName);
                 examplesWidth = bitmap.Width;
                 examplesHeight = bitmap.Height;
 
                 //printLine(f.Name + ": " + bitmap.Width + "x" + bitmap.Height);
-                Dispatcher.Invoke(printLineDelegate, f.Name + ": " + bitmap.Width + "x" + bitmap.Height);
-                Perceptron p = new Perceptron(bitmap.Width * bitmap.Height);
+                printLine(f.Name + ": " + bitmap.Width + "x" + bitmap.Height);
+                PerceptronLib.Vector v = new PerceptronLib.Vector(bitmap.Width * bitmap.Height);
 
                 int width = bitmap.Width;
                 int height = bitmap.Height;
@@ -48,10 +48,10 @@ namespace RozpoznawanieTwarzy
                     for (int j = 0; j < height; j++)
                     {
                         int index = i * height + j;
-                        p.Weights[index] = (double)bitmap.GetPixel(i, j).R / (256.0F * width * height);
-                        sum += p.Weights[index];
-                        if (min > p.Weights[index]) min = p.Weights[index];
-                        if (max < p.Weights[index]) max = p.Weights[index];
+                        v[index] = (double)bitmap.GetPixel(i, j).R / (256.0F * width * height) * 3000;
+                        sum += v[index];
+                        if (min > v[index]) min = v[index];
+                        if (max < v[index]) max = v[index];
 
 
                     }
@@ -63,13 +63,13 @@ namespace RozpoznawanieTwarzy
                     for (int j = 0; j < height; j++)
                     {
                         int index = i * height + j;
-                        p.Weights[index] -= medium;
+                        v[index] -= medium;
                     }
                 }
 
-                //printLine("Max = " + max + ", Min = " + min + ", Sum = " + sum
-                //    + ", " + medium);
-                examples.Add(new LearningExample(p.Weights, 0));
+                printLine("Max = " + max + ", Min = " + min + ", Sum = " + sum
+                    + ", medium = " + medium);
+                examples.Add(new LearningExample(v, 0));
             }
 
             return examples;

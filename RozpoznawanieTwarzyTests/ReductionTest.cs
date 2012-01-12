@@ -46,6 +46,12 @@ namespace RozpoznawanieTwarzyTests
                 e.Example[1] -= ymed;
             }
 
+            foreach (LearningExample ex in points)
+            {
+                ex.Example[0] /= 5;
+                ex.Example[1] /= 5;
+            }
+
             // Inicjalizacja progu akceptacji błędu wektora głównego
             ojResultBias = 0.001;
         }
@@ -109,7 +115,7 @@ namespace RozpoznawanieTwarzyTests
         {
                 printPointsList();
 
-                MainWindow w = new MainWindow(100, 1);
+                MainWindow w = new MainWindow(1000, 1);
 
                 Perceptron p = w.ojLearn(points);
 

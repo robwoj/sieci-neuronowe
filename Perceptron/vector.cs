@@ -131,6 +131,29 @@ namespace PerceptronLib
         }
 
         /// <summary>
+        /// Operator mnożenia wektora przez skalar
+        /// </summary>
+        public static Vector operator *(Vector v, double scal)
+        {
+            Vector result = new Vector(v.dimension);
+            for (int i = 0; i < v.dimension; i++)
+            {
+                result[i] = scal * v[i];
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// Operator mnożenia wektora przez skalar
+        /// </summary>
+        public static Vector operator *(double scal, Vector v)
+        {
+            return v * scal;
+        }
+
+        /// <summary>
         /// Funkcja przeznaczona do potęgowania wektora
         /// </summary>
         /// <param name="val">

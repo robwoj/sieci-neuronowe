@@ -41,17 +41,17 @@ namespace RozpoznawanieTwarzy
                 printLine("i = " + i); 
 #endif
                 principalComponents.Add(ojLearn(list));
-                Perceptron p = principalComponents[i];
+                PerceptronLib.Vector w = principalComponents[i].Weights;
+                printLine("Składowa główna: " + w[0] + ", " + w[1] + ", " + w[2] + ", " + w[3]);
+                printLine("Składowa główna: długość = " + w.Length);
                 List<LearningExample> nextList = new List<LearningExample>();
                 foreach (LearningExample ex in list)
                 {
-                    double val = p.Weights * p.Weights;
-                    double activation = p.Weights * ex.Example;
+                    PerceptronLib.Vector x = ex.Example;
+                    double val = w * w;
+                    double activation = w * x;
                     PerceptronLib.Vector nextExVector = new PerceptronLib.Vector(dimension);
-                    for (int j = 0; j < dimension; j++)
-                    {
-                        nextExVector[j] = ex.Example[j] - p.Weights[j] * activation / val;
-                    }
+                    nextExVector = x - w * (activation / val);
                     LearningExample nextEx = new LearningExample(nextExVector, 0);
                     nextList.Add(nextEx);
                 }
@@ -75,45 +75,53 @@ namespace RozpoznawanieTwarzy
 
             Random r = new Random();
             double eta = 0.5;
-            Perceptron perceptron = new Perceptron(exampleList[0].Example.Dimension);
-            perceptron.Weights.normalizeWeights();
+            PerceptronLib.Vector w = (new Perceptron(exampleList[0].Example.Dimension)).Weights;
+            //perceptron.Weights.normalizeWeights();
             //printVectorLength(perceptron.Weights);
             
             for (int i = 0; i < ojIterations; i++)
             {
 #if DEBUG
-                if (i % 10 == 0)
-                    printLine("Oj: i = " + i);
-                Console.WriteLine("Algorytm Oja: Wektor: " + perceptron.Weights + " długość: " + perceptron.Weights.Length);
+                //if (i % 10 == 0)
+                //    printLine("Oj: i = " + i);
+                Console.WriteLine("Algorytm Oja: Wektor: " + w + " długość: " + w.Length);
+                Console.WriteLine("Algorytm Oja: <W,W> = " + w * w);
 #endif
                 // Losuje następny przykład uczący
                 LearningExample ex = exampleList[r.Next(exampleList.Count)];
+                PerceptronLib.Vector x = ex.Example;
 #if DEBUG
-                Console.WriteLine("Algorytm Oja: Wybrany przykład: " + ex.Example);
+                Console.WriteLine("Algorytm Oja: Wybrany przykład: " + x);
 #endif
-                double activation = perceptron.Weights * ex.Example;
+                double activation = w * x;
 #if DEBUG
                 Console.WriteLine("Algorytm Oja: Aktywacja: " + activation);
+                Console.WriteLine("Algorytm Oja: yW = " + activation * w);
+                Console.WriteLine("Algorytm Oja: <(X - yW), W> = " + (x - activation * w)
+                    * w);
 #endif
 
                 //printLine("act: " + activation);
-                for (int j = 0; j < perceptron.Dimension; j++)
-                {
-                    perceptron.Weights[j] += eta * activation * ex.Example[j];
-                }
+                //for (int j = 0; j < perceptron.Dimension; j++)
+                //{
+                //    perceptron.Weights[j] += eta * activation * (ex.Example[j]
+                //        - activation * perceptron.Weights[j]);
+                //}
+                w += eta * activation * (x - activation * w);
+                //perceptron = new Perceptron(w);
 
                 // Normalizuje długość wektora do 1
-                perceptron.Weights.normalizeWeights();
+                //perceptron.Weights.normalizeWeights();
 #if DEBUG
 
-                Console.WriteLine("Algorytm Oja: " + "wektor główny: "  + perceptron.Weights);
+                Console.WriteLine("Algorytm Oja: " + "wektor główny: "  + w);
 #endif
             }
 
 #if DEBUG
             Console.WriteLine("Algorytm Oja: koniec");
 #endif
-            return perceptron;
+            return new Perceptron(w);
         }
     }
 
