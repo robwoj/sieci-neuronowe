@@ -52,6 +52,7 @@ namespace RozpoznawanieTwarzy
                     double activation = w * x;
                     PerceptronLib.Vector nextExVector = new PerceptronLib.Vector(dimension);
                     nextExVector = x - w * (activation / val);
+                    nextExVector.normalizeWeights();
                     LearningExample nextEx = new LearningExample(nextExVector, 0);
                     nextList.Add(nextEx);
                 }

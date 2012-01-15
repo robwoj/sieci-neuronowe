@@ -21,7 +21,7 @@ namespace PerceptronLib
         /// </summary>
         public LearningExample(Vector example, double expectedValue)
         {
-            v = example;
+            v = new Vector(example);
             Vector expectedVector = new Vector();
             expectedVector[0] = expectedValue;
             this.expectedValue = expectedVector;

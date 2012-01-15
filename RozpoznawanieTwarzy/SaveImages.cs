@@ -33,12 +33,13 @@ namespace RozpoznawanieTwarzy
             {
                 LearningExample ex = examples[l];
                 int dimension = examples[0].Example.Dimension;
-                
+
+                //printLine("outputDim = " + outputDimension + ", vectors.count = " + vectors.Count);
                 for (int k = 0; k < outputDimension; k++)
                 {
                     Perceptron p = vectors[k];
                     Bitmap img = new Bitmap(examplesWidth, examplesHeight);
-                    if (l == 0)
+                    if (k == 0)
                     {
                         Bitmap eigenImg = new Bitmap(examplesWidth, examplesHeight);
                         LearningExample eigenEx = new LearningExample(vectors[k].Weights, 0);

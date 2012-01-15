@@ -48,7 +48,8 @@ namespace RozpoznawanieTwarzy
                     for (int j = 0; j < height; j++)
                     {
                         int index = i * height + j;
-                        v[index] = (double)bitmap.GetPixel(i, j).R / (256.0F * width * height) * 3000;
+                        //v[index] = (double)bitmap.GetPixel(i, j).R / (256.0F * width * height) * 3000;
+                        v[index] = (double)bitmap.GetPixel(i, j).R;
                         sum += v[index];
                         if (min > v[index]) min = v[index];
                         if (max < v[index]) max = v[index];
@@ -67,8 +68,9 @@ namespace RozpoznawanieTwarzy
                     }
                 }
 
-                printLine("Max = " + max + ", Min = " + min + ", Sum = " + sum
-                    + ", medium = " + medium);
+                v.normalizeWeights();
+                //printLine("Max = " + max + ", Min = " + min + ", Sum = " + sum
+                //    + ", medium = " + medium);
                 examples.Add(new LearningExample(v, 0));
             }
 

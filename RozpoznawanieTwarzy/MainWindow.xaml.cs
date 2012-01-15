@@ -54,7 +54,7 @@ namespace RozpoznawanieTwarzy
             openDialog.Description = "Podaj katalog z przykładami";
 
             learnButton.IsEnabled = false;
-            ojIterations = 10000;
+            ojIterations = 1000;
             printLineDelegate = printByDispatcher;
             saveImagesDelegate = saveImages;
             createLearningExamplesDelegate = createLearningExamples;
@@ -65,7 +65,7 @@ namespace RozpoznawanieTwarzy
             OnReductionStarted = reductionStarted;
             files = null;
             learnButton.IsEnabled = false;
-            outputDimension = 1;
+            outputDimension = 5;
         }
 
         private void openButton_Click(object sender, RoutedEventArgs e)
