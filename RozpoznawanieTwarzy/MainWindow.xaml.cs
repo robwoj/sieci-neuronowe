@@ -38,6 +38,8 @@ namespace RozpoznawanieTwarzy
         Thread reducingThread;
         List<FileInfo> files;
 
+        private string dataBaseFileName;
+
         /// <summary>
         /// Konstruktor przeznaczony dla testu jednostkowego
         /// </summary>
@@ -54,7 +56,7 @@ namespace RozpoznawanieTwarzy
             openDialog.Description = "Podaj katalog z przykładami";
 
             learnButton.IsEnabled = false;
-            ojIterations = 1000;
+            ojIterations = 100;
             printLineDelegate = printByDispatcher;
             saveImagesDelegate = saveImages;
             createLearningExamplesDelegate = createLearningExamples;
@@ -66,6 +68,8 @@ namespace RozpoznawanieTwarzy
             files = null;
             learnButton.IsEnabled = false;
             outputDimension = 5;
+
+            dataBaseFileName = "database.db";
         }
 
         private void openButton_Click(object sender, RoutedEventArgs e)

@@ -71,7 +71,7 @@ namespace RozpoznawanieTwarzy
         internal Perceptron ojLearn(List<LearningExample> exampleList)
         {
             #if DEBUG
-            Console.WriteLine("Algorytm Oja: początek");
+            //Console.WriteLine("Algorytm Oja: początek");
             #endif
 
             Random r = new Random();
@@ -85,21 +85,21 @@ namespace RozpoznawanieTwarzy
 #if DEBUG
                 //if (i % 10 == 0)
                 //    printLine("Oj: i = " + i);
-                Console.WriteLine("Algorytm Oja: Wektor: " + w + " długość: " + w.Length);
-                Console.WriteLine("Algorytm Oja: <W,W> = " + w * w);
+                //Console.WriteLine("Algorytm Oja: Wektor: " + w + " długość: " + w.Length);
+                //Console.WriteLine("Algorytm Oja: <W,W> = " + w * w);
 #endif
                 // Losuje następny przykład uczący
                 LearningExample ex = exampleList[r.Next(exampleList.Count)];
                 PerceptronLib.Vector x = ex.Example;
 #if DEBUG
-                Console.WriteLine("Algorytm Oja: Wybrany przykład: " + x);
+                //Console.WriteLine("Algorytm Oja: Wybrany przykład: " + x);
 #endif
                 double activation = w * x;
 #if DEBUG
-                Console.WriteLine("Algorytm Oja: Aktywacja: " + activation);
-                Console.WriteLine("Algorytm Oja: yW = " + activation * w);
-                Console.WriteLine("Algorytm Oja: <(X - yW), W> = " + (x - activation * w)
-                    * w);
+                //Console.WriteLine("Algorytm Oja: Aktywacja: " + activation);
+                //Console.WriteLine("Algorytm Oja: yW = " + activation * w);
+                //Console.WriteLine("Algorytm Oja: <(X - yW), W> = " + (x - activation * w)
+                //    * w);
 #endif
 
                 //printLine("act: " + activation);
@@ -115,12 +115,12 @@ namespace RozpoznawanieTwarzy
                 //perceptron.Weights.normalizeWeights();
 #if DEBUG
 
-                Console.WriteLine("Algorytm Oja: " + "wektor główny: "  + w);
+                //Console.WriteLine("Algorytm Oja: " + "wektor główny: "  + w);
 #endif
             }
 
 #if DEBUG
-            Console.WriteLine("Algorytm Oja: koniec");
+            //Console.WriteLine("Algorytm Oja: koniec");
 #endif
             return new Perceptron(w);
         }
