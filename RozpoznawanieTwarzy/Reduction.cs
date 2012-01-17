@@ -77,7 +77,7 @@ namespace RozpoznawanieTwarzy
             Random r = new Random();
             double eta = 0.5;
             PerceptronLib.Vector w = (new Perceptron(exampleList[0].Example.Dimension)).Weights;
-            //perceptron.Weights.normalizeWeights();
+            w.normalizeWeights();
             //printVectorLength(perceptron.Weights);
             
             for (int i = 0; i < ojIterations; i++)

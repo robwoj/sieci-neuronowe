@@ -37,13 +37,14 @@ namespace RozpoznawanieTwarzy
             List<EigenNode> nodes = new List<EigenNode>();
 
             printLine("Zapisywanie wyników...");
+            int dimension = examples[0].Example.Dimension;
             for (int l = 0; l < examples.Count; l++)
             {
                 LearningExample ex = examples[l];
-                int dimension = examples[0].Example.Dimension;
 
                 // Tworzy nowy element bazy danych
                 nodes.Add(new EigenNode("Przykład" + (l+1)));
+                PerceptronLib.Vector v = new PerceptronLib.Vector(dimension);
 
                 //printLine("outputDim = " + outputDimension + ", vectors.count = " + vectors.Count);
                 for (int k = 0; k < outputDimension; k++)
@@ -74,10 +75,9 @@ namespace RozpoznawanieTwarzy
 
                     nodes[l].Coordinates.Add(activation);
 
-                    PerceptronLib.Vector nextExVector = new PerceptronLib.Vector(dimension);
-                    nextExVector = ex.Example - p.Weights * (activation / val);
-                    ex = new LearningExample(nextExVector, 0);
-                    normalizeRange(ex, 256.0F, width, height);
+                    v += p.Weights * (activation / val);
+                    LearningExample newEx = new LearningExample(v, 0);
+                    normalizeRange(newEx, 256.0F, width, height);
                     
 
                     for (int i = 0; i < width; i++)
@@ -85,14 +85,11 @@ namespace RozpoznawanieTwarzy
                         for (int j = 0; j < height; j++)
                         {
                             int index = i * height + j;
-                            byte color = (byte)(ex.Example[index]);
+                            byte color = (byte)(newEx.Example[index]);
                             System.Drawing.Color c = System.Drawing.Color.FromArgb(255, color, color, color);
                             img.SetPixel(i, j, c);
                         }
                     }
-
-                    // Wraca do wektora długości 1
-                    ex.Example.normalizeWeights();
 
                     img.Save("output" + (l + 1) + "-" + (k + 1) + ".jpg");
                 }
