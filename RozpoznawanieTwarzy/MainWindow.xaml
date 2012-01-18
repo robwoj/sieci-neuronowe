@@ -7,5 +7,9 @@
         <TextBox Margin="106,12,12,12" Name="konsola" />
         <Button Content="Redukuj" Height="23" HorizontalAlignment="Left" Margin="16,43,0,0" Name="learnButton" VerticalAlignment="Top" Width="75" Click="learnButton_Click" />
         <Button Content="Rozpoznaj..." Height="23" HorizontalAlignment="Left" Margin="16,72,0,0" Name="compareButton" VerticalAlignment="Top" Width="75" Click="compareButton_Click" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="16,118,0,0" Name="iterationsText" VerticalAlignment="Top" Width="84" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="16,161,0,0" Name="dimensionText" VerticalAlignment="Top" Width="84" />
+        <Label Content="Liczba iteracji" Height="28" HorizontalAlignment="Left" Margin="16,96,0,0" Name="labelIter" VerticalAlignment="Top" />
+        <Label Content="Wymiar wyjścia" Height="28" HorizontalAlignment="Left" Margin="16,139,0,0" Name="labelDim" VerticalAlignment="Top" />
     </Grid>
 </Window>

@@ -63,6 +63,7 @@ namespace RozpoznawanieTwarzy
             openFileDialog.Title = "Podaj plik przeznaczony do rozponania";
 
             ojIterations = 10;
+            iterationsText.Text = ojIterations.ToString();
             printLineDelegate = printByDispatcher;
             saveImagesDelegate = saveImages;
             createLearningExamplesDelegate = createLearningExamples;
@@ -75,7 +76,8 @@ namespace RozpoznawanieTwarzy
             learnButton.IsEnabled = false;
             compareButton.IsEnabled = false;
             outputDimension = 7;
-
+            dimensionText.Text = outputDimension.ToString();
+            
             dataBaseFileName = "D:\\sieci-neuronowe\\database.db";
             examplesHeight = 0;
             examplesWidth = 0;
@@ -231,6 +233,21 @@ namespace RozpoznawanieTwarzy
         /// </summary>
         private void learnButton_Click(object sender, RoutedEventArgs e)
         {
+            bool success = true;
+            success = int.TryParse(iterationsText.Text, out ojIterations);
+            if(success == false || ojIterations <= 0)
+            {
+                printLine("Niepoprawna liczba iteracji");
+                return;
+            }
+
+            success = int.TryParse(dimensionText.Text, out outputDimension);
+            if (success == false || outputDimension <= 0)
+            {
+                printLine("Niepoprawny wymiar");
+                return;
+            }
+
             if (examples != null)
             {
                 printLine("Rozpoczynanie analizy składowych głównych, "

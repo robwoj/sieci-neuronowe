@@ -42,8 +42,8 @@ namespace RozpoznawanieTwarzy
 #endif
                 principalComponents.Add(ojLearn(list).Weights);
                 PerceptronLib.Vector w = principalComponents[i];
-                printLine("Składowa główna: " + w[0] + ", " + w[1] + ", " + w[2] + ", " + w[3]);
-                printLine("Składowa główna: długość = " + w.Length);
+                //printLine("Składowa główna: " + w[0] + ", " + w[1] + ", " + w[2] + ", " + w[3]);
+                //printLine("Składowa główna: długość = " + w.Length);
                 List<LearningExample> nextList = new List<LearningExample>();
                 foreach (LearningExample ex in list)
                 {
