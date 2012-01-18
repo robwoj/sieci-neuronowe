@@ -1,10 +1,11 @@
 ﻿<Window x:Class="RozpoznawanieTwarzy.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Rozpoznawanie twarzy" Height="350" Width="525" WindowState="Maximized" WindowStyle="SingleBorderWindow" KeyDown="Window_KeyDown" Closing="Window_Closing">
+        Title="Rozpoznawanie twarzy" Height="559" Width="808" WindowState="Maximized" WindowStyle="SingleBorderWindow" KeyDown="Window_KeyDown" Closing="Window_Closing">
     <Grid>
         <Button Content="Otwórz..." Height="23" HorizontalAlignment="Left" Margin="16,14,0,0" Name="openButton" VerticalAlignment="Top" Width="75" Click="openButton_Click" />
         <TextBox Margin="106,12,12,12" Name="konsola" />
         <Button Content="Redukuj" Height="23" HorizontalAlignment="Left" Margin="16,43,0,0" Name="learnButton" VerticalAlignment="Top" Width="75" Click="learnButton_Click" />
+        <Button Content="Rozpoznaj..." Height="23" HorizontalAlignment="Left" Margin="16,72,0,0" Name="compareButton" VerticalAlignment="Top" Width="75" Click="compareButton_Click" />
     </Grid>
 </Window>

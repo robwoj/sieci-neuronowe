@@ -8,6 +8,7 @@ namespace PerceptronLib
     /// <summary>
     /// Klasa reprezentująca wektor
     /// </summary>
+    [Serializable]
     public class Vector
     {
         // Tablica double
@@ -64,7 +65,8 @@ namespace PerceptronLib
         {
             if (a.Dimension != b.Dimension)
             {
-                throw new SizeException("Niezgodne wymiary wektorów");
+                throw new SizeException("Niezgodne wymiary wektorów: dim(a) = "
+                    + a.dimension + ", dim(b) = " + b.dimension);
             }
 
         }

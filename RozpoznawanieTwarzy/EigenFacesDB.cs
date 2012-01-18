@@ -66,9 +66,100 @@ namespace RozpoznawanieTwarzy
         /// <summary>
         /// Tworzy pustą bazę danych
         /// </summary>
-        public EigenFacesDB()
+        public EigenFacesDB(List<Vector> eigenVs)
         {
             dataBase = new List<EigenNode>();
+            eigenVectors = new List<Vector>();
+            for (int i = 0; i < eigenVs.Count; i++)
+            {
+                eigenVectors.Add(eigenVs[i]);
+            }
+
+            dimension = eigenVectors.Count;
+        }
+
+        /// <summary>
+        /// Zwraca wymiar przestrzeni
+        /// </summary>
+        public int Dimension
+        {
+            get
+            {
+                return dimension;
+            }
+        }
+
+        public string tmp;
+
+        /// <summary>
+        /// Zwraca najbliższą twarz w bazie
+        /// </summary>
+        /// <param name="face">
+        /// Wektor złożony z pikseli obrazka
+        /// </param>
+        /// <returns>
+        /// Nazwa skojarzona ze znalezionym obrazem
+        /// </returns>
+        public string compareFace(Vector face)
+        {
+            face.normalizeWeights();
+
+            Vector v = new Vector(face.Dimension);
+            List<double> values = new List<double>();
+            foreach (Vector eigenV in eigenVectors)
+            {
+                double val = eigenV * eigenV;
+                values.Add(val);
+            }
+
+            for (int i = 0; i < dimension; i++)
+            {
+                double act = eigenVectors[i] * face;
+                v += eigenVectors[i] * (act / values[i]);
+            }
+
+            double min = -1;
+            EigenNode minNode = null;
+            tmp = "";
+            try
+            {
+                foreach (EigenNode node in dataBase)
+                {
+                    Vector w = new Vector(face.Dimension);
+
+                    for (int j = 0; j < dimension; j++)
+                    {
+                        w += eigenVectors[j] * (node.Coordinates[j] / values[j]);
+                    }
+
+                    Vector sum = w - v;
+                    double diff = sum * sum;
+
+                    if (min == -1)
+                    {
+                        min = diff;
+                        minNode = node;
+                    }
+                    else
+                    {
+                        if (min > diff)
+                        {
+                            min = diff;
+                            minNode = node;
+                        }
+                    }
+                    tmp += diff.ToString() + "  ";
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message + " [ " + ex.StackTrace + " ]";
+            }
+
+            if (minNode != null)
+                return minNode.Name;
+
+            return string.Empty;
         }
     }
 

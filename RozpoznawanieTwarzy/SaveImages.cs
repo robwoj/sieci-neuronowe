@@ -28,13 +28,12 @@ namespace RozpoznawanieTwarzy
         /// <summary>
         /// Zapisuje utworzone obrazy na dysku
         /// </summary>
-        private void saveImages(List<Perceptron> vectors, int width, int height)
+        private void saveImages(List<PerceptronLib.Vector> vectors, int width, int height)
         {
             // Otwiera plik bazy danych i nadpisuje go
             FileStream stream = new System.IO.FileStream(dataBaseFileName, FileMode.Create, System.IO.FileAccess.Write);
-            EigenFacesDB db = new EigenFacesDB();
+            EigenFacesDB db = new EigenFacesDB(vectors);
             BinaryFormatter formatter = new BinaryFormatter();
-            List<EigenNode> nodes = new List<EigenNode>();
 
             printLine("Zapisywanie wyników...");
             int dimension = examples[0].Example.Dimension;
@@ -43,18 +42,18 @@ namespace RozpoznawanieTwarzy
                 LearningExample ex = examples[l];
 
                 // Tworzy nowy element bazy danych
-                nodes.Add(new EigenNode("Przykład" + (l+1)));
+                EigenNode node = new EigenNode("Przykład" + (l+1));
                 PerceptronLib.Vector v = new PerceptronLib.Vector(dimension);
 
                 //printLine("outputDim = " + outputDimension + ", vectors.count = " + vectors.Count);
                 for (int k = 0; k < outputDimension; k++)
                 {
-                    Perceptron p = vectors[k];
+                    PerceptronLib.Vector p = vectors[k];
                     Bitmap img = new Bitmap(examplesWidth, examplesHeight);
                     if (l == 0)
                     {
                         Bitmap eigenImg = new Bitmap(examplesWidth, examplesHeight);
-                        LearningExample eigenEx = new LearningExample(vectors[k].Weights, 0);
+                        LearningExample eigenEx = new LearningExample(vectors[k], 0);
                         normalizeRange(eigenEx, 256.0F, width, height);
 
                         for (int i = 0; i < width; i++)
@@ -70,12 +69,12 @@ namespace RozpoznawanieTwarzy
 
                         eigenImg.Save("eigenVector-" + (k + 1) + ".jpg");
                     }
-                    double val = p.Weights * p.Weights;
-                    double activation = p.Weights * ex.Example;
+                    double val = p * p;
+                    double activation = p * ex.Example;
 
-                    nodes[l].Coordinates.Add(activation);
+                    node.Coordinates.Add(activation);
 
-                    v += p.Weights * (activation / val);
+                    v += p * (activation / val);
                     LearningExample newEx = new LearningExample(v, 0);
                     normalizeRange(newEx, 256.0F, width, height);
                     
@@ -93,6 +92,8 @@ namespace RozpoznawanieTwarzy
 
                     img.Save("output" + (l + 1) + "-" + (k + 1) + ".jpg");
                 }
+
+                db.add(node);
             }
 
             //foreach (EigenNode n in nodes)
@@ -101,7 +102,16 @@ namespace RozpoznawanieTwarzy
             //    db.add(n);
             //}
 
-            formatter.Serialize(stream, db);
+            printLine("Wymiar zapisywanej bazy: " + db.Dimension);
+            try
+            {
+                formatter.Serialize(stream, db);
+            }
+            catch (Exception ex)
+            {
+
+                printLine("Wujątek: " + ex.Message + " [ " + ex.StackTrace + " ]");
+            }
             stream.Close();
         }
 

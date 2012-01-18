@@ -17,6 +17,9 @@ using PerceptronLib;
 using System.Drawing;
 using System.Threading;
 using System.Runtime.CompilerServices;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 [assembly:InternalsVisibleTo("RozpoznawanieTwarzyTests")]
 namespace RozpoznawanieTwarzy
@@ -26,13 +29,14 @@ namespace RozpoznawanieTwarzy
     /// </summary>
     public partial class MainWindow : Window
     {
-        private FolderBrowserDialog openDialog;
+        private FolderBrowserDialog openFolderDialog;
+        private OpenFileDialog openFileDialog;
         private List<LearningExample> examples;
         internal int ojIterations;
         internal int outputDimension;
         private int examplesWidth;
         private int examplesHeight;
-
+        
         Thread creatingExamplesThread;
         Thread savingImagesThread;
         Thread reducingThread;
@@ -52,11 +56,13 @@ namespace RozpoznawanieTwarzy
         public MainWindow()
         {
             InitializeComponent();
-            openDialog = new FolderBrowserDialog();
-            openDialog.Description = "Podaj katalog z przykładami";
+            openFolderDialog = new FolderBrowserDialog();
+            openFolderDialog.Description = "Podaj katalog z przykładami";
+            openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "*JPEG|*.jpg|Wszystkie pliki|*.*";
+            openFileDialog.Title = "Podaj plik przeznaczony do rozponania";
 
-            learnButton.IsEnabled = false;
-            ojIterations = 100;
+            ojIterations = 10;
             printLineDelegate = printByDispatcher;
             saveImagesDelegate = saveImages;
             createLearningExamplesDelegate = createLearningExamples;
@@ -67,25 +73,28 @@ namespace RozpoznawanieTwarzy
             OnReductionStarted = reductionStarted;
             files = null;
             learnButton.IsEnabled = false;
-            outputDimension = 5;
+            compareButton.IsEnabled = false;
+            outputDimension = 7;
 
-            dataBaseFileName = "database.db";
+            dataBaseFileName = "D:\\sieci-neuronowe\\database.db";
+            examplesHeight = 0;
+            examplesWidth = 0;
         }
 
         private void openButton_Click(object sender, RoutedEventArgs e)
         {
-            openDialog.ShowDialog();
-            if (openDialog.SelectedPath != null)
+            openFolderDialog.ShowDialog();
+            if (openFolderDialog.SelectedPath != null)
             {
-                printByDispatcher("Wybrano katalog " + openDialog.SelectedPath);
+                printByDispatcher("Wybrano katalog " + openFolderDialog.SelectedPath);
                 DirectoryInfo di = null;
                 try
                 {
-                    di = new DirectoryInfo(openDialog.SelectedPath);
+                    di = new DirectoryInfo(openFolderDialog.SelectedPath);
                 }
                 catch (Exception ex)
                 {
-                    printByDispatcher("Nie można otworzyć katalogu " + openDialog.SelectedPath
+                    printByDispatcher("Nie można otworzyć katalogu " + openFolderDialog.SelectedPath
                         + "\n\t" + ex.Message);
                     return;
                 }
@@ -117,16 +126,27 @@ namespace RozpoznawanieTwarzy
         private void reductionStarted(object sender, EventArgs e)
         {
             learnButton.IsEnabled = false;
+            compareButton.IsEnabled = false;
+            openButton.IsEnabled = false;
         }
 
         private void reductionFinished(object sender, EventArgs e)
         {
             learnButton.IsEnabled = true;
+            openButton.IsEnabled = true;
+            compareButton.IsEnabled = true;
         }
         private void stateChange(object sender, EventArgs e)
         {
             if (examples != null)
+            {
+                openButton.IsEnabled = true;
                 learnButton.IsEnabled = true;
+                if(File.Exists(dataBaseFileName))
+                {
+                    compareButton.IsEnabled = true;
+                }
+            }
         }
 
         private event stateEvent OnStateChange;
@@ -163,7 +183,7 @@ namespace RozpoznawanieTwarzy
             Dispatcher.Invoke(OnStateChange, this, new EventArgs());
         }
 
-        private delegate void imageSaveFunc(List<Perceptron> vectors, int width, int height);
+        private delegate void imageSaveFunc(List<PerceptronLib.Vector> vectors, int width, int height);
 
         private imageSaveFunc saveImagesDelegate;
 
@@ -265,6 +285,56 @@ namespace RozpoznawanieTwarzy
             catch (Exception)
             {
                 
+            }
+        }
+
+        private void compareButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                openFileDialog.ShowDialog();
+                if (openFileDialog.FileName != null)
+                {
+                    string fn = openFileDialog.FileName;
+                    printLine("Porównywanie pliku: " + fn);
+                    Bitmap bitmap = (Bitmap)Bitmap.FromFile(fn);
+                    if (bitmap.Width == examplesWidth && bitmap.Height == examplesHeight)
+                    {
+                        printLine("Wymiary OK");
+
+                        PerceptronLib.Vector v = new PerceptronLib.Vector(bitmap.Width * bitmap.Height);
+
+                        int width = bitmap.Width;
+                        int height = bitmap.Height;
+                        for (int i = 0; i < width; i++)
+                        {
+                            for (int j = 0; j < height; j++)
+                            {
+                                int index = i * height + j;
+                                //v[index] = (double)bitmap.GetPixel(i, j).R / (256.0F * width * height) * 3000;
+                                v[index] = (double)bitmap.GetPixel(i, j).R;
+                            }
+                        }
+
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        FileStream fs = new System.IO.FileStream(dataBaseFileName, FileMode.Open, System.IO.FileAccess.Read);
+                        EigenFacesDB db = (EigenFacesDB)formatter.Deserialize(fs);
+
+                        printLine("Otworzono bazę danych, wymiar bazy: " + db.Dimension);
+
+                        printLine("Rozpoznany obraz: " + db.compareFace(v));
+                        printLine(db.tmp);
+
+                    }
+                    else
+                    {
+                        printLine("Niezgodne wymiary wejścia");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                printLine(ex.Message + " [ " + ex.StackTrace + " ]");
             }
         }
 

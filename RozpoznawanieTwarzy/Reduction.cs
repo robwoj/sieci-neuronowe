@@ -34,14 +34,14 @@ namespace RozpoznawanieTwarzy
             List<LearningExample> list = new List<LearningExample>(exampleList);
             int dimension = exampleList[0].Example.Dimension;
 
-            List<Perceptron> principalComponents = new List<Perceptron>(outputDimension);
+            List<PerceptronLib.Vector> principalComponents = new List<PerceptronLib.Vector>(outputDimension);
             for (int i = 0; i < outputDimension; i++)
             {
 #if DEBUG
                 printLine("i = " + i); 
 #endif
-                principalComponents.Add(ojLearn(list));
-                PerceptronLib.Vector w = principalComponents[i].Weights;
+                principalComponents.Add(ojLearn(list).Weights);
+                PerceptronLib.Vector w = principalComponents[i];
                 printLine("Składowa główna: " + w[0] + ", " + w[1] + ", " + w[2] + ", " + w[3]);
                 printLine("Składowa główna: długość = " + w.Length);
                 List<LearningExample> nextList = new List<LearningExample>();
