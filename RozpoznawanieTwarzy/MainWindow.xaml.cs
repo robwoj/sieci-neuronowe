@@ -78,7 +78,9 @@ namespace RozpoznawanieTwarzy
             outputDimension = 7;
             dimensionText.Text = outputDimension.ToString();
             
-            dataBaseFileName = "D:\\sieci-neuronowe\\database.db";
+            dataBaseFileName = "C:\\sieci-neuronowe\\database.db";
+            dataBasePathText.Text = dataBaseFileName;
+
             examplesHeight = 0;
             examplesWidth = 0;
         }
@@ -307,6 +309,12 @@ namespace RozpoznawanieTwarzy
 
         private void compareButton_Click(object sender, RoutedEventArgs e)
         {
+            if (File.Exists(dataBasePathText.Text) == false)
+            {
+                printLine("Nie istnieje plik bazy danych");
+                return;
+            }
+
             try
             {
                 openFileDialog.ShowDialog();
@@ -334,13 +342,11 @@ namespace RozpoznawanieTwarzy
                         }
 
                         BinaryFormatter formatter = new BinaryFormatter();
-                        FileStream fs = new System.IO.FileStream(dataBaseFileName, FileMode.Open, System.IO.FileAccess.Read);
+
+                        FileStream fs = new System.IO.FileStream(dataBasePathText.Text, FileMode.Open, System.IO.FileAccess.Read);
                         EigenFacesDB db = (EigenFacesDB)formatter.Deserialize(fs);
 
-                        printLine("Otworzono bazę danych, wymiar bazy: " + db.Dimension);
-
                         printLine("Rozpoznany obraz: " + db.compareFace(v));
-                        printLine(db.tmp);
 
                     }
                     else

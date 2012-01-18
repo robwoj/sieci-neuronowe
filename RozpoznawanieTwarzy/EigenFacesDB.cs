@@ -89,8 +89,6 @@ namespace RozpoznawanieTwarzy
             }
         }
 
-        public string tmp;
-
         /// <summary>
         /// Zwraca najbliższą twarz w bazie
         /// </summary>
@@ -120,7 +118,6 @@ namespace RozpoznawanieTwarzy
 
             double min = -1;
             EigenNode minNode = null;
-            tmp = "";
             try
             {
                 foreach (EigenNode node in dataBase)
@@ -148,7 +145,6 @@ namespace RozpoznawanieTwarzy
                             minNode = node;
                         }
                     }
-                    tmp += diff.ToString() + "  ";
                 }
             }
             catch (Exception ex)
