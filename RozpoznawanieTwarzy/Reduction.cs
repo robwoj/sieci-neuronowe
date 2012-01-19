@@ -29,40 +29,49 @@ namespace RozpoznawanieTwarzy
         /// </summary>
         internal void reduction(List<LearningExample> exampleList)
         {
-            Dispatcher.Invoke(OnReductionStarted, this, new EventArgs());
-
-            List<LearningExample> list = new List<LearningExample>(exampleList);
-            int dimension = exampleList[0].Example.Dimension;
-
-            List<PerceptronLib.Vector> principalComponents = new List<PerceptronLib.Vector>(outputDimension);
-            for (int i = 0; i < outputDimension; i++)
+            try
             {
+
+                Dispatcher.Invoke(OnReductionStarted, this, new EventArgs());
+
+                List<LearningExample> list = new List<LearningExample>(exampleList);
+                int dimension = exampleList[0].Example.Dimension;
+
+                List<PerceptronLib.Vector> principalComponents = new List<PerceptronLib.Vector>(outputDimension);
+                for (int i = 0; i < outputDimension; i++)
+                {
 #if DEBUG
                 printLine("i = " + i); 
 #endif
-                principalComponents.Add(ojLearn(list).Weights);
-                PerceptronLib.Vector w = principalComponents[i];
-                //printLine("Składowa główna: " + w[0] + ", " + w[1] + ", " + w[2] + ", " + w[3]);
-                //printLine("Składowa główna: długość = " + w.Length);
-                List<LearningExample> nextList = new List<LearningExample>();
-                foreach (LearningExample ex in list)
-                {
-                    PerceptronLib.Vector x = ex.Example;
-                    double val = w * w;
-                    double activation = w * x;
-                    PerceptronLib.Vector nextExVector = new PerceptronLib.Vector(dimension);
-                    nextExVector = x - w * (activation / val);
-                    nextExVector.normalizeWeights();
-                    LearningExample nextEx = new LearningExample(nextExVector, 0);
-                    nextList.Add(nextEx);
+                    principalComponents.Add(ojLearn(list).Weights);
+                    PerceptronLib.Vector w = principalComponents[i];
+                    //printLine("Składowa główna: " + w[0] + ", " + w[1] + ", " + w[2] + ", " + w[3]);
+                    //printLine("Składowa główna: długość = " + w.Length);
+                    List<LearningExample> nextList = new List<LearningExample>();
+                    foreach (LearningExample ex in list)
+                    {
+                        PerceptronLib.Vector x = ex.Example;
+                        double val = w * w;
+                        double activation = w * x;
+                        PerceptronLib.Vector nextExVector = new PerceptronLib.Vector(dimension);
+                        nextExVector = x - w * (activation / val);
+                        nextExVector.normalizeWeights();
+                        LearningExample nextEx = new LearningExample(nextExVector, 0);
+                        nextList.Add(nextEx);
+                    }
+                    list = nextList;
+
                 }
-                list = nextList;
+
+                saveImages(principalComponents, examplesWidth, examplesHeight);
+
+                Dispatcher.Invoke(OnReductionFinished, this, new EventArgs());
 
             }
-
-            saveImages(principalComponents, examplesWidth, examplesHeight);
-
-            Dispatcher.Invoke(OnReductionFinished, this, new EventArgs());
+            catch (Exception ex)
+            {
+                printLine(ex.Message + " [ " + ex.StackTrace + " ]");
+            }
         }
 
         /// <summary>

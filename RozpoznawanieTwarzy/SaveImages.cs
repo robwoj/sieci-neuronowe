@@ -30,89 +30,101 @@ namespace RozpoznawanieTwarzy
         /// </summary>
         private void saveImages(List<PerceptronLib.Vector> vectors, int width, int height)
         {
-            // Otwiera plik bazy danych i nadpisuje go
-            FileStream stream = new System.IO.FileStream(dataBaseFileName, FileMode.Create, System.IO.FileAccess.Write);
-            EigenFacesDB db = new EigenFacesDB(vectors);
-            BinaryFormatter formatter = new BinaryFormatter();
-
-            printLine("Zapisywanie wyników...");
-            int dimension = examples[0].Example.Dimension;
-            for (int l = 0; l < examples.Count; l++)
+            try
             {
-                LearningExample ex = examples[l];
+                //if (File.Exists(getDataBaseFileName()) == false)
+                //{
+                //    printLine("Plik bazy danych nie istnieje");
+                //    return;
+                //}
 
-                // Tworzy nowy element bazy danych
-                EigenNode node = new EigenNode("Przykład" + (l+1));
-                PerceptronLib.Vector v = new PerceptronLib.Vector(dimension);
+                // Otwiera plik bazy danych i nadpisuje go
+                FileStream stream = new System.IO.FileStream(getDataBaseFileName(), FileMode.CreateNew, System.IO.FileAccess.Write);
+                EigenFacesDB db = new EigenFacesDB(vectors);
+                BinaryFormatter formatter = new BinaryFormatter();
 
-                //printLine("outputDim = " + outputDimension + ", vectors.count = " + vectors.Count);
-                for (int k = 0; k < outputDimension; k++)
+                printLine("Zapisywanie wyników...");
+                int dimension = examples[0].Example.Dimension;
+                for (int l = 0; l < examples.Count; l++)
                 {
-                    PerceptronLib.Vector p = vectors[k];
-                    Bitmap img = new Bitmap(examplesWidth, examplesHeight);
-                    if (l == 0)
+                    LearningExample ex = examples[l];
+
+                    // Tworzy nowy element bazy danych
+                    EigenNode node = new EigenNode("Przykład" + (l + 1));
+                    PerceptronLib.Vector v = new PerceptronLib.Vector(dimension);
+
+                    //printLine("outputDim = " + outputDimension + ", vectors.count = " + vectors.Count);
+                    for (int k = 0; k < outputDimension; k++)
                     {
-                        Bitmap eigenImg = new Bitmap(examplesWidth, examplesHeight);
-                        LearningExample eigenEx = new LearningExample(vectors[k], 0);
-                        normalizeRange(eigenEx, 256.0F, width, height);
+                        PerceptronLib.Vector p = vectors[k];
+                        Bitmap img = new Bitmap(examplesWidth, examplesHeight);
+                        if (l == 0)
+                        {
+                            Bitmap eigenImg = new Bitmap(examplesWidth, examplesHeight);
+                            LearningExample eigenEx = new LearningExample(vectors[k], 0);
+                            normalizeRange(eigenEx, 256.0F, width, height);
+
+                            for (int i = 0; i < width; i++)
+                            {
+                                for (int j = 0; j < height; j++)
+                                {
+                                    int index = i * height + j;
+                                    byte color = (byte)(eigenEx.Example[index]);
+                                    System.Drawing.Color c = System.Drawing.Color.FromArgb(255, color, color, color);
+                                    eigenImg.SetPixel(i, j, c);
+                                }
+                            }
+
+                            eigenImg.Save("eigenVector-" + (k + 1) + ".jpg");
+                        }
+                        double val = p * p;
+                        double activation = p * ex.Example;
+
+                        node.Coordinates.Add(activation);
+
+                        v += p * (activation / val);
+                        LearningExample newEx = new LearningExample(v, 0);
+                        normalizeRange(newEx, 256.0F, width, height);
+
 
                         for (int i = 0; i < width; i++)
                         {
                             for (int j = 0; j < height; j++)
                             {
                                 int index = i * height + j;
-                                byte color = (byte)(eigenEx.Example[index]);
+                                byte color = (byte)(newEx.Example[index]);
                                 System.Drawing.Color c = System.Drawing.Color.FromArgb(255, color, color, color);
-                                eigenImg.SetPixel(i, j, c);
+                                img.SetPixel(i, j, c);
                             }
                         }
 
-                        eigenImg.Save("eigenVector-" + (k + 1) + ".jpg");
-                    }
-                    double val = p * p;
-                    double activation = p * ex.Example;
-
-                    node.Coordinates.Add(activation);
-
-                    v += p * (activation / val);
-                    LearningExample newEx = new LearningExample(v, 0);
-                    normalizeRange(newEx, 256.0F, width, height);
-                    
-
-                    for (int i = 0; i < width; i++)
-                    {
-                        for (int j = 0; j < height; j++)
-                        {
-                            int index = i * height + j;
-                            byte color = (byte)(newEx.Example[index]);
-                            System.Drawing.Color c = System.Drawing.Color.FromArgb(255, color, color, color);
-                            img.SetPixel(i, j, c);
-                        }
+                        img.Save("output" + (l + 1) + "-" + (k + 1) + ".jpg");
                     }
 
-                    img.Save("output" + (l + 1) + "-" + (k + 1) + ".jpg");
+                    db.add(node);
                 }
+                //foreach (EigenNode n in nodes)
+                //{
+                //    printLine("n.coordinates: " + n.Coordinates.Count);
+                //    db.add(n);
+                //}
 
-                db.add(node);
-            }
+                printLine("Wymiar zapisywanej bazy: " + db.Dimension);
+                try
+                {
+                    formatter.Serialize(stream, db);
+                }
+                catch (Exception ex)
+                {
 
-            //foreach (EigenNode n in nodes)
-            //{
-            //    printLine("n.coordinates: " + n.Coordinates.Count);
-            //    db.add(n);
-            //}
-
-            printLine("Wymiar zapisywanej bazy: " + db.Dimension);
-            try
-            {
-                formatter.Serialize(stream, db);
+                    printLine("Wujątek: " + ex.Message + " [ " + ex.StackTrace + " ]");
+                }
+                stream.Close();
             }
             catch (Exception ex)
             {
-
-                printLine("Wujątek: " + ex.Message + " [ " + ex.StackTrace + " ]");
+                printLine(ex.Message + " [ " + ex.StackTrace + " ] " + ex.GetType());
             }
-            stream.Close();
         }
 
         /// <summary>

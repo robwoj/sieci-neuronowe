@@ -78,8 +78,9 @@ namespace RozpoznawanieTwarzy
             outputDimension = 7;
             dimensionText.Text = outputDimension.ToString();
             
-            dataBaseFileName = "C:\\sieci-neuronowe\\database.db";
+            dataBaseFileName = "C:\\database.db";
             dataBasePathText.Text = dataBaseFileName;
+            getDataBaseFileNameDelegate += DBFN;
 
             examplesHeight = 0;
             examplesWidth = 0;
@@ -277,6 +278,19 @@ namespace RozpoznawanieTwarzy
         /// Delegacja do funkcji printLine
         /// </summary>
         private voidatstring printLineDelegate;
+
+        private delegate string stringatvoid();
+        private stringatvoid getDataBaseFileNameDelegate;
+
+        private string DBFN()
+        {
+            return dataBasePathText.Text;
+        }
+
+        private string getDataBaseFileName()
+        {
+            return (string)Dispatcher.Invoke(getDataBaseFileNameDelegate);
+        }
 
         /// <summary>
         /// Zapewnia zatrzymanie wątków roboczych
