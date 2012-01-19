@@ -39,7 +39,7 @@ namespace RozpoznawanieTwarzy
                 //}
 
                 // Otwiera plik bazy danych i nadpisuje go
-                FileStream stream = new System.IO.FileStream(getDataBaseFileName(), FileMode.CreateNew, System.IO.FileAccess.Write);
+                FileStream stream = new System.IO.FileStream(getDataBaseFileName(), FileMode.Create, System.IO.FileAccess.Write);
                 EigenFacesDB db = new EigenFacesDB(vectors);
                 BinaryFormatter formatter = new BinaryFormatter();
 
