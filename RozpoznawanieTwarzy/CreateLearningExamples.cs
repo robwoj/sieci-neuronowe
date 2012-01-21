@@ -25,9 +25,9 @@ namespace RozpoznawanieTwarzy
         /// <summary>
         /// Tworzy listę przykładów uczących na podstawie obrazów wczytanych z dysku
         /// </summary>
-        private List<LearningExample> createLearningExamples(List<FileInfo> files)
+        private List<PerceptronLib.Vector> createLearningExamples(List<FileInfo> files)
         {
-            List<LearningExample> examples = new List<LearningExample>();
+            List<PerceptronLib.Vector> examples = new List<PerceptronLib.Vector>();
             foreach (FileInfo f in files)
             {
                 double sum = 0.0F;
@@ -71,7 +71,7 @@ namespace RozpoznawanieTwarzy
                 v.normalizeWeights();
                 //printLine("Max = " + max + ", Min = " + min + ", Sum = " + sum
                 //    + ", medium = " + medium);
-                examples.Add(new LearningExample(v, 0));
+                examples.Add(v);
             }
 
             return examples;

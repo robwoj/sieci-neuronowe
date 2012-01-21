@@ -32,7 +32,7 @@ namespace RozpoznawanieTwarzy
     {
         private FolderBrowserDialog openFolderDialog;
         private OpenFileDialog openFileDialog;
-        private List<LearningExample> examples;
+        private List<PerceptronLib.Vector> examples;
         internal int ojIterations;
         internal int outputDimension;
         private int examplesWidth;
@@ -169,19 +169,19 @@ namespace RozpoznawanieTwarzy
             }
         }
 
-        private void setExamples(List<LearningExample> examplesList)
+        private void setExamples(List<PerceptronLib.Vector> examplesList)
         {
             examples = examplesList;
         }
 
-        private delegate void voidatexamplelist(List<LearningExample> exampleList);
+        private delegate void voidatexamplelist(List<PerceptronLib.Vector> exampleList);
         private voidatexamplelist setExamplesDelegate;
         private delegate List<FileInfo> fileinfolistatvoid();
         private fileinfolistatvoid getFilesDelegate; 
 
         private void startCreatingExamples()
         {
-            List<LearningExample> exList = 
+            List<PerceptronLib.Vector> exList = 
                 createLearningExamples((List<FileInfo>)Dispatcher.Invoke(getFilesDelegate));
 
             Dispatcher.Invoke(setExamplesDelegate, exList);
@@ -195,7 +195,7 @@ namespace RozpoznawanieTwarzy
 
 
 
-        private delegate List<LearningExample> examplesCreatingFunc(List<FileInfo> files);
+        private delegate List<PerceptronLib.Vector> examplesCreatingFunc(List<FileInfo> files);
 
         private examplesCreatingFunc createLearningExamplesDelegate;
 
@@ -262,11 +262,13 @@ namespace RozpoznawanieTwarzy
             }
         }
 
+        private FaceRecognitionEngine engine;
+
         private void startReducing(object exaplesObj)
         {
-            if (exaplesObj is List<LearningExample>)
+            if (exaplesObj is List<PerceptronLib.Vector>)
             {
-                reduction((List<LearningExample>)exaplesObj);
+                engine = new FaceRecognitionEngine(examples, null, outputDimension, ojIterations);
             }
         }
 

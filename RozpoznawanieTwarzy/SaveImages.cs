@@ -45,10 +45,10 @@ namespace RozpoznawanieTwarzy
                 BinaryFormatter formatter = new BinaryFormatter();
 
                 printLine("Zapisywanie wyników...");
-                int dimension = examples[0].Example.Dimension;
+                int dimension = examples[0].Dimension;
                 for (int l = 0; l < examples.Count; l++)
                 {
-                    LearningExample ex = examples[l];
+                    PerceptronLib.Vector ex = examples[l];
 
                     // Tworzy nowy element bazy danych
                     EigenNode node = new EigenNode("Przykład" + (l + 1));
@@ -79,7 +79,7 @@ namespace RozpoznawanieTwarzy
                             eigenImg.Save("eigenVector-" + (k + 1) + ".jpg");
                         }
                         double val = p * p;
-                        double activation = p * ex.Example;
+                        double activation = p * ex;
 
                         node.Coordinates.Add(activation);
 

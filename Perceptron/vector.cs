@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Collections;
 
 namespace PerceptronLib
 {
@@ -9,7 +10,7 @@ namespace PerceptronLib
     /// Klasa reprezentująca wektor
     /// </summary>
     [Serializable]
-    public class Vector
+    public class Vector : IEnumerable<double>
     {
         // Tablica double
         private double[] array;
@@ -331,6 +332,17 @@ namespace PerceptronLib
             {
                 array[i] /= len;
             }
+        }
+
+        public IEnumerator<double> GetEnumerator()
+        {
+            List<double> array = new List<double>();
+            return array.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return array.GetEnumerator();
         }
     }
 }
