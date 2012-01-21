@@ -47,7 +47,10 @@ namespace PerceptronLib
             }
         }
 
-
+        /// <summary>
+        /// Konstruktor tworzący wektor na podstawie ogólnej kolekcji IEnumerable
+        /// </summary>
+        /// <param name="v"></param>
         public Vector(IEnumerable<double> v)
         {
             dimension = v.Count();

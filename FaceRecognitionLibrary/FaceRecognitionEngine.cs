@@ -6,15 +6,20 @@ using PerceptronLib;
 
 namespace FaceRecognitionLibrary
 {
-    public class UserInfo
+    public interface IUserInfo
     {
-        public string login;
+        string Login
+        {
+            get;
+        }
     }
 
     public partial class FaceRecognitionEngine
     {
         private bool dataBaseCreated;
         private const int defaultDimension = 6;
+        private const int defaultIterations = 100;
+
         public bool DataBaseCreated
         {
             get
@@ -29,15 +34,24 @@ namespace FaceRecognitionLibrary
         }
 
         public FaceRecognitionEngine(IEnumerable<IEnumerable<double>> inputVectors, 
-            IEnumerable<UserInfo> userInfo, int dimension = defaultDimension)
+            IEnumerable<IUserInfo> userInfo, int dimension = defaultDimension, int iterations = defaultIterations)
         {
+            dataBaseFileName = "D:\\sieci-neuronowe\\database.db";
+
             List<LearningExample> examples = new List<LearningExample>();
 
             // Rzutowanie na pojedyncze wektory
             foreach (IEnumerable<double> array in inputVectors)
             {
-
+                examples.Add(new LearningExample(new Vector(array), 0));
             }
+
+            outputDimension = dimension;
+            ojIterations = iterations;
+
+            reduction(examples);
+
+
         }
     }
 }

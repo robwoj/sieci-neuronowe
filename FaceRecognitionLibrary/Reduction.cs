@@ -3,13 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using PerceptronLib;
+using System.IO;
+using System.Runtime.Serialization;
+
+// Dopóki nie zostanie zastosowany schemat bazy danych
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace FaceRecognitionLibrary
 {
-    public partial class FaceRecognitionLibrary
+    public partial class FaceRecognitionEngine
     {
         private int outputDimension;
         private int ojIterations;
+        private string dataBaseFileName;
+        private List<Vector> principalComponents;
 
         /// <summary>
         /// Algorytm redukcji składowych głównych
@@ -24,7 +31,7 @@ namespace FaceRecognitionLibrary
                 List<LearningExample> list = new List<LearningExample>(exampleList);
                 int dimension = exampleList[0].Example.Dimension;
 
-                List<PerceptronLib.Vector> principalComponents = new List<PerceptronLib.Vector>(outputDimension);
+                principalComponents = new List<PerceptronLib.Vector>(outputDimension);
                 for (int i = 0; i < outputDimension; i++)
                 {
                     principalComponents.Add(ojLearn(list).Weights);
@@ -63,16 +70,16 @@ namespace FaceRecognitionLibrary
         /// </summary>
         internal Perceptron ojLearn(List<LearningExample> exampleList)
         {
-            #if DEBUG
+#if DEBUG
             //Console.WriteLine("Algorytm Oja: początek");
-            #endif
+#endif
 
             Random r = new Random();
             double eta = 0.5;
             PerceptronLib.Vector w = (new Perceptron(exampleList[0].Example.Dimension)).Weights;
             w.normalizeWeights();
             //printVectorLength(perceptron.Weights);
-            
+
             for (int i = 0; i < ojIterations; i++)
             {
 #if DEBUG
@@ -117,8 +124,53 @@ namespace FaceRecognitionLibrary
 #endif
             return new Perceptron(w);
         }
+
+        // TODO: 
+        // Do zmiany: należy zastosować profesjonalny schemat bazy danych zamiast zwykłej
+        // serializacji
+        /// <summary>
+        /// Buduje bazę danych
+        /// </summary>
+        /// <param name="principalComponents">
+        /// Lista wektorów głównych
+        /// </param>
+        /// <param name="userInfoEnum">
+        /// Dane użytkownika
+        /// </param>
+        private void builDataBase(List<Vector> vectors, IEnumerable<IUserInfo> userInfoEnum,
+            List<LearningExample> examples)
+        {
+            FileStream stream = new System.IO.FileStream(dataBaseFileName, FileMode.Create, System.IO.FileAccess.Write);
+            EigenFacesDB db = new EigenFacesDB(principalComponents);
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            int dimension = examples[0].Example.Dimension;
+            for (int l = 0; l < examples.Count; l++)
+            {
+                LearningExample ex = examples[l];
+
+                // Tworzy nowy element bazy danych
+                EigenNode node = new EigenNode("Przykład" + (l + 1));
+                PerceptronLib.Vector v = new PerceptronLib.Vector(dimension);
+
+                for (int k = 0; k < outputDimension; k++)
+                {
+                    PerceptronLib.Vector p = vectors[k];
+                    double activation = p * ex.Example;
+
+                    node.Coordinates.Add(activation);
+
+                }
+
+                db.add(node);
+            }
+
+            formatter.Serialize(stream, db);
+            stream.Close();
+
+        }
     }
 
 
-    
+
 }
