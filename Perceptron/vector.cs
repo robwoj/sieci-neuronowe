@@ -47,6 +47,17 @@ namespace PerceptronLib
             }
         }
 
+
+        public Vector(double[] v)
+        {
+            dimension = v.Length;
+            array = new double[dimension];
+            for (int i = 0; i < dimension; i++)
+            {
+                array[i] = v[i];
+            }
+        }
+
         /// <summary>
         /// Zwraca wymiar wektora
         /// </summary>

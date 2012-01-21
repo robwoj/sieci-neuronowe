@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LearningExample.cs" />
+    <Compile Include="Matrix.cs" />
     <Compile Include="Perceptron.cs" />
     <Compile Include="PerceptronEventArgs.cs" />
     <Compile Include="PerceptronLibExceptions.cs" />

@@ -1,0 +1,26 @@
+﻿<Window x:Class="AutoasocjatorHopfielda.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="498" Width="925" Loaded="Window_Loaded" KeyDown="mainCanvas_KeyDown" WindowState="Normal" WindowStartupLocation="CenterScreen">
+
+    <Grid>
+        <Canvas Name="mainCanvas" KeyDown="mainCanvas_KeyDown" Margin="0,0,313,0" Width="590">
+            <Button Canvas.Left="50" Canvas.Top="210" Content="Uruchom" Height="23" Name="runButton" Width="75" Click="runButtonClick" />
+            <Button Canvas.Left="130" Canvas.Top="210" Content="Dodaj" Height="23" Name="addButton" Width="75" Click="addExamplesButtonClick" />
+            <ListBox Canvas.Left="220" Canvas.Top="210" Height="243" Name="sourceList" Width="150" SelectionChanged="sourceList_SelectionChanged" />
+            <Button Canvas.Left="50" Canvas.Top="239" Content="Wyczyść" Height="23" Name="clearButton" Width="75" Click="clearButton_Click" />
+            <Button Canvas.Left="130" Canvas.Top="239" Content="Usuń" Height="23" Name="removeButton" Width="75" IsEnabled="False" Click="removeButton_Click" />
+            <RadioButton Canvas.Left="390" Canvas.Top="233" Content="Prosta dynamika" Height="16" Name="simpleRadio" Width="180" IsChecked="True" Checked="simpleRadio_Checked" />
+            <RadioButton Canvas.Left="390" Canvas.Top="255" Content="Symulowane wyżarzanie" Height="16" Name="simulatedRadio" Width="180" Checked="simulatedRadio_Checked" />
+            <Label Canvas.Left="390" Canvas.Top="210" Content="Typ dynamiki" Height="28" Name="label1" Width="155" />
+            <TextBox Canvas.Left="390" Canvas.Top="320" Height="23" Name="iterText" Width="120" />
+            <Label Canvas.Left="390" Canvas.Top="300" Content="Liczba iteracji" Height="28" Name="label3" />
+            <TextBox Canvas.Left="390" Canvas.Top="369" Height="23" Name="constText" Width="120" Visibility="Visible" />
+            <Label Canvas.Left="390" Canvas.Top="349" Content="Stała wyżarzania" Height="28" Name="constLabel" Visibility="Visible" />
+            <TextBox Canvas.Left="390" Canvas.Top="418" Height="23" Name="podstText" Width="120" Visibility="Visible" />
+            <Label Canvas.Left="390" Canvas.Top="398" Content="Podstawa" Height="28" Name="podstLabel" Visibility="Visible" />
+            <CheckBox Canvas.Left="390" Canvas.Top="277" Content="Zakończ, jeśli sieć jest stabilna" Height="17" Name="finnishCheckBox" Width="180" Checked="finnishCheckBox_Checked" Unchecked="finnishCheckBox_Unchecked" />
+        </Canvas>
+        <TextBox Name="konsola" Margin="596,0,0,0" VerticalScrollBarVisibility="Auto" />
+    </Grid>
+</Window>
