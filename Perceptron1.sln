@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RozpoznawanieTwarzyTests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoasocjatorHopfielda", "AutoasocjatorHopfielda\AutoasocjatorHopfielda.csproj", "{5FB4DF2E-A0C4-46FE-A884-86456407F9B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FaceRecognitionLibrary", "FaceRecognitionLibrary\FaceRecognitionLibrary.csproj", "{CD023AF7-7165-471A-A906-D3BDE29C2397}"
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = Perceptron1.vsmdi
@@ -142,6 +144,16 @@ Global
 		{5FB4DF2E-A0C4-46FE-A884-86456407F9B0}.Release|Mixed Platforms.Build.0 = Release|x86
 		{5FB4DF2E-A0C4-46FE-A884-86456407F9B0}.Release|x86.ActiveCfg = Release|x86
 		{5FB4DF2E-A0C4-46FE-A884-86456407F9B0}.Release|x86.Build.0 = Release|x86
+		{CD023AF7-7165-471A-A906-D3BDE29C2397}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD023AF7-7165-471A-A906-D3BDE29C2397}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD023AF7-7165-471A-A906-D3BDE29C2397}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CD023AF7-7165-471A-A906-D3BDE29C2397}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CD023AF7-7165-471A-A906-D3BDE29C2397}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CD023AF7-7165-471A-A906-D3BDE29C2397}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD023AF7-7165-471A-A906-D3BDE29C2397}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD023AF7-7165-471A-A906-D3BDE29C2397}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CD023AF7-7165-471A-A906-D3BDE29C2397}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CD023AF7-7165-471A-A906-D3BDE29C2397}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
