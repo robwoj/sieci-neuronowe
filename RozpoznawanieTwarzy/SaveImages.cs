@@ -17,6 +17,7 @@ using System.Drawing;
 using System.Threading;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using FaceRecognitionLibrary;
 namespace RozpoznawanieTwarzy
 {
     /// <summary>

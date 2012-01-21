@@ -40,8 +40,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="EigenFacesDB.cs" />
+    <Compile Include="FaceRecognitionEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reduction.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Perceptron\PerceptronLib.csproj">
+      <Project>{2E87769C-B334-4188-9A08-51A30E743686}</Project>
+      <Name>PerceptronLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

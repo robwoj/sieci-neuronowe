@@ -58,7 +58,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CreateLearningExamples.cs" />
-    <Compile Include="EigenFacesDB.cs" />
     <Compile Include="Reduction.cs" />
     <Compile Include="SaveImages.cs" />
     <Page Include="MainWindow.xaml">
@@ -99,6 +98,10 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\FaceRecognitionLibrary\FaceRecognitionLibrary.csproj">
+      <Project>{CD023AF7-7165-471A-A906-D3BDE29C2397}</Project>
+      <Name>FaceRecognitionLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Perceptron\PerceptronLib.csproj">
       <Project>{2E87769C-B334-4188-9A08-51A30E743686}</Project>
       <Name>PerceptronLib</Name>

@@ -5,13 +5,13 @@ using System.Text;
 using PerceptronLib;
 using System.Runtime.Serialization;
 
-namespace RozpoznawanieTwarzy
+namespace FaceRecognitionLibrary
 {
     /// <summary>
     /// Klasa reprezentująca bazę obrazów zapamiętanych za pomocą eigenfaces
     /// </summary>
     [Serializable]
-    class EigenFacesDB
+    public class EigenFacesDB
     {
 
         /// <summary>

@@ -20,6 +20,7 @@ using System.Runtime.CompilerServices;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using FaceRecognitionLibrary;
 
 [assembly:InternalsVisibleTo("RozpoznawanieTwarzyTests")]
 namespace RozpoznawanieTwarzy

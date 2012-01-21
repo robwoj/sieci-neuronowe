@@ -48,13 +48,15 @@ namespace PerceptronLib
         }
 
 
-        public Vector(double[] v)
+        public Vector(IEnumerable<double> v)
         {
-            dimension = v.Length;
+            dimension = v.Count();
             array = new double[dimension];
-            for (int i = 0; i < dimension; i++)
+            int i = 0;
+            foreach (double d in v)
             {
-                array[i] = v[i];
+                array[i] = d;
+                i++;
             }
         }
 
