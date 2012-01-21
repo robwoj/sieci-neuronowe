@@ -5,6 +5,10 @@ using System.Text;
 using PerceptronLib;
 using System.Runtime.Serialization;
 
+// TODO:
+// Dodać inne niż string pole w klasie EigenNode
+
+
 namespace FaceRecognitionLibrary
 {
     /// <summary>
@@ -23,6 +27,17 @@ namespace FaceRecognitionLibrary
         /// Baza przestrzeni
         /// </summary>
         private List<Vector> eigenVectors;
+
+        /// <summary>
+        /// Zwraca bazę przestrzeni obrazów
+        /// </summary>
+        internal List<Vector> EigenVectors
+        {
+            get
+            {
+                return eigenVectors;
+            }
+        }
 
         /// <summary>
         /// Zbiór danych
@@ -88,6 +103,10 @@ namespace FaceRecognitionLibrary
                 return dimension;
             }
         }
+
+
+        // TODO:
+        // Zmienić na internal
 
         /// <summary>
         /// Zwraca najbliższą twarz w bazie

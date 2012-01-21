@@ -17,6 +17,7 @@ namespace FaceRecognitionLibrary
         private int ojIterations;
         private string dataBaseFileName;
         private List<Vector> principalComponents;
+        private EigenFacesDB dataBase;
 
         /// <summary>
         /// Algorytm redukcji składowych głównych
@@ -25,9 +26,6 @@ namespace FaceRecognitionLibrary
         {
             try
             {
-
-                //Dispatcher.Invoke(OnReductionStarted, this, new EventArgs());
-
                 List<LearningExample> list = new List<LearningExample>(exampleList);
                 int dimension = exampleList[0].Example.Dimension;
 
@@ -36,8 +34,6 @@ namespace FaceRecognitionLibrary
                 {
                     principalComponents.Add(ojLearn(list).Weights);
                     PerceptronLib.Vector w = principalComponents[i];
-                    //printLine("Składowa główna: " + w[0] + ", " + w[1] + ", " + w[2] + ", " + w[3]);
-                    //printLine("Składowa główna: długość = " + w.Length);
                     List<LearningExample> nextList = new List<LearningExample>();
                     foreach (LearningExample ex in list)
                     {
@@ -53,11 +49,6 @@ namespace FaceRecognitionLibrary
                     list = nextList;
 
                 }
-
-                //saveImages(principalComponents, examplesWidth, examplesHeight);
-
-                //Dispatcher.Invoke(OnReductionFinished, this, new EventArgs());
-
             }
             catch (Exception ex)
             {
@@ -68,7 +59,7 @@ namespace FaceRecognitionLibrary
         /// <summary>
         /// Algorytm Oja 
         /// </summary>
-        internal Perceptron ojLearn(List<LearningExample> exampleList)
+        private Perceptron ojLearn(List<LearningExample> exampleList)
         {
 #if DEBUG
             //Console.WriteLine("Algorytm Oja: początek");
@@ -128,16 +119,17 @@ namespace FaceRecognitionLibrary
         // TODO: 
         // Do zmiany: należy zastosować profesjonalny schemat bazy danych zamiast zwykłej
         // serializacji
+        // Dodać sprawdzanie równości wymiarów przykładów wejściowych i wektorów głównych
         /// <summary>
         /// Buduje bazę danych
         /// </summary>
         /// <param name="principalComponents">
         /// Lista wektorów głównych
         /// </param>
-        /// <param name="userInfoEnum">
+        /// <param name="userInfoList">
         /// Dane użytkownika
         /// </param>
-        private void builDataBase(List<Vector> vectors, IEnumerable<IUserInfo> userInfoEnum,
+        private void builDataBase(List<IUserInfo> userInfoList,
             List<LearningExample> examples)
         {
             FileStream stream = new System.IO.FileStream(dataBaseFileName, FileMode.Create, System.IO.FileAccess.Write);
@@ -150,12 +142,11 @@ namespace FaceRecognitionLibrary
                 LearningExample ex = examples[l];
 
                 // Tworzy nowy element bazy danych
-                EigenNode node = new EigenNode("Przykład" + (l + 1));
-                PerceptronLib.Vector v = new PerceptronLib.Vector(dimension);
+                EigenNode node = new EigenNode(userInfoList[l].Login);
 
                 for (int k = 0; k < outputDimension; k++)
                 {
-                    PerceptronLib.Vector p = vectors[k];
+                    PerceptronLib.Vector p = principalComponents[k];
                     double activation = p * ex.Example;
 
                     node.Coordinates.Add(activation);
@@ -168,6 +159,21 @@ namespace FaceRecognitionLibrary
             formatter.Serialize(stream, db);
             stream.Close();
 
+            dataBase = db;
+            dataBaseCreated = true;
+        }
+
+        private void loadDataBase(string fileName)
+        {
+            if (File.Exists(fileName))
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                FileStream stream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                EigenFacesDB db = (EigenFacesDB)formatter.Deserialize(stream);
+
+                principalComponents = db.EigenVectors;
+                dataBase = db;
+            }
         }
     }
 

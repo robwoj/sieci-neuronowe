@@ -14,6 +14,42 @@ namespace FaceRecognitionLibrary
         }
     }
 
+    public class UserInfo
+    {
+        private string login;
+        private string imie;
+        private string nazwisko;
+        public string Login
+        {
+            get
+            {
+                return login;
+            }
+        }
+
+        public string Imie
+        {
+            get
+            {
+                return imie;
+            }
+        }
+
+        public string Nazwisko
+        {
+            get
+            {
+                return nazwisko;
+            }
+        }
+
+        public UserInfo(string login, string imie, string nazwisko)
+        {
+            this.imie = imie;
+            this.nazwisko = nazwisko;
+            this.login = login;
+        }
+    }
     public partial class FaceRecognitionEngine
     {
         private bool dataBaseCreated;
@@ -46,12 +82,34 @@ namespace FaceRecognitionLibrary
                 examples.Add(new LearningExample(new Vector(array), 0));
             }
 
+            List<IUserInfo> userInfoList = new List<IUserInfo>(userInfo);
             outputDimension = dimension;
             ojIterations = iterations;
 
             reduction(examples);
 
+            builDataBase(userInfoList, examples);
+        }
 
+        public FaceRecognitionEngine(string fileName)
+        {
+            loadDataBase(fileName);
+        }
+
+        public bool recogniseFace(IEnumerable<double> face, string login)
+        {
+            return login == dataBase.compareFace(new Vector(face));
+
+            //IUserInfo userInfo = dataBase.compareFace(new Vector(face));
+
+            //if (userInfo.Login == login)
+            //{
+            //    return userInfo;
+            //}
+            //else
+            //{
+            //    throw new Exception("Nie rozpoznano użytkownika");
+            //}
         }
     }
 }
