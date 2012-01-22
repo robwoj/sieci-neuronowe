@@ -17,7 +17,6 @@ using PerceptronLib;
 using System.Drawing;
 using System.Threading;
 using System.Runtime.CompilerServices;
-using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using FaceRecognitionLibrary;
@@ -37,7 +36,7 @@ namespace RozpoznawanieTwarzy
         internal int outputDimension;
         private int examplesWidth;
         private int examplesHeight;
-        
+        private List<UserInfo> users;
         Thread creatingExamplesThread;
         Thread savingImagesThread;
         Thread reducingThread;
@@ -66,7 +65,7 @@ namespace RozpoznawanieTwarzy
             ojIterations = 10;
             iterationsText.Text = ojIterations.ToString();
             printLineDelegate = printByDispatcher;
-            saveImagesDelegate = saveImages;
+            //saveImagesDelegate = saveImages;
             createLearningExamplesDelegate = createLearningExamples;
             getFilesDelegate = getFiles;
             setExamplesDelegate = setExamples;
@@ -85,6 +84,7 @@ namespace RozpoznawanieTwarzy
 
             examplesHeight = 0;
             examplesWidth = 0;
+            users = new List<UserInfo>();
         }
 
         private void openButton_Click(object sender, RoutedEventArgs e)
@@ -267,8 +267,11 @@ namespace RozpoznawanieTwarzy
         private void startReducing(object exaplesObj)
         {
             if (exaplesObj is List<PerceptronLib.Vector>)
-            {
-                engine = new FaceRecognitionEngine(examples, null, outputDimension, ojIterations);
+            {                
+                printLine("dim: " + outputDimension + ", iter: " + ojIterations);
+                engine = new FaceRecognitionEngine(examples, users, getDataBaseFileName(), outputDimension, ojIterations);
+                printLine("Utworzono bazę twarzy");
+                
             }
         }
 
@@ -358,12 +361,20 @@ namespace RozpoznawanieTwarzy
                             }
                         }
 
-                        BinaryFormatter formatter = new BinaryFormatter();
+                        printLine("Rozpoczynanie rozpoznania");
+                        FaceRecognitionEngine engine = 
+                            new FaceRecognitionEngine("C:\\database.db");
 
-                        FileStream fs = new System.IO.FileStream(dataBasePathText.Text, FileMode.Open, System.IO.FileAccess.Read);
-                        EigenFacesDB db = (EigenFacesDB)formatter.Deserialize(fs);
+                        IUserInfo userInfo = engine.RecogniseFace(v, "Ja");
+                        if (userInfo != null)
+                        {
+                            printLine("Rozpoznano twarz: " + userInfo.Login);
+                        }
+                        else
+                        {
+                            printLine("Nie rozpoznano twarzy");
+                        }
 
-                        printLine("Rozpoznany obraz: " + db.compareFace(v));
 
                     }
                     else

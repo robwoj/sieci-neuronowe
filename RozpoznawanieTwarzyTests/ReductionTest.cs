@@ -110,23 +110,23 @@ namespace RozpoznawanieTwarzyTests
         /// a * [1,1]
         /// gdzie a jest dowolną liczbą rzeczywistą.
         /// </summary>
-        [TestMethod]
-        public void OjTest()
-        {
-                printPointsList();
+        //[TestMethod]
+        //public void OjTest()
+        //{
+        //        printPointsList();
 
-                MainWindow w = new MainWindow(1000, 1);
+        //        MainWindow w = new MainWindow(1000, 1);
 
-                Perceptron p = w.ojLearn(points);
+        //        Perceptron p = w.ojLearn(points);
 
-                Vector r = p.Weights;
-                Console.WriteLine(r.Length.ToString());
-                Console.WriteLine(r.ToString());
+        //        Vector r = p.Weights;
+        //        Console.WriteLine(r.Length.ToString());
+        //        Console.WriteLine(r.ToString());
 
-                double kat = Math.Abs(r[0] / r[1]);
-                //Assert.IsTrue(kat <= 1.0F + ojResultBias && kat >= 1.0F - ojResultBias,
-                //    "Kąt wektora głównego znacząco odbiega od oczekiwanego [" + kat + "]");
-        }
+        //        double kat = Math.Abs(r[0] / r[1]);
+        //        //Assert.IsTrue(kat <= 1.0F + ojResultBias && kat >= 1.0F - ojResultBias,
+        //        //    "Kąt wektora głównego znacząco odbiega od oczekiwanego [" + kat + "]");
+        //}
 
         private void printPointsList()
         {

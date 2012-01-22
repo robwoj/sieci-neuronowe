@@ -15,6 +15,7 @@ using System.IO;
 using PerceptronLib;
 using System.Drawing;
 using System.Threading;
+using FaceRecognitionLibrary;
 namespace RozpoznawanieTwarzy
 {
     /// <summary>
@@ -72,6 +73,15 @@ namespace RozpoznawanieTwarzy
                 //printLine("Max = " + max + ", Min = " + min + ", Sum = " + sum
                 //    + ", medium = " + medium);
                 examples.Add(v);
+
+                string name = f.Name;
+                char[] digits = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+                int digIndex = name.IndexOfAny(digits);
+                //string lastName = "";
+                if (digIndex != -1)
+                {
+                    users.Add(new UserInfo(name.Substring(0, digIndex), "", ""));
+                }
             }
 
             return examples;

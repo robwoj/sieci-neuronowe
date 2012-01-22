@@ -24,35 +24,28 @@ namespace FaceRecognitionLibrary
         /// </summary>
         internal void reduction(List<LearningExample> exampleList)
         {
-            try
-            {
-                List<LearningExample> list = new List<LearningExample>(exampleList);
-                int dimension = exampleList[0].Example.Dimension;
+            List<LearningExample> list = new List<LearningExample>(exampleList);
+            int dimension = exampleList[0].Example.Dimension;
 
-                principalComponents = new List<PerceptronLib.Vector>(outputDimension);
-                for (int i = 0; i < outputDimension; i++)
+            principalComponents = new List<PerceptronLib.Vector>(outputDimension);
+            for (int i = 0; i < outputDimension; i++)
+            {
+                principalComponents.Add(ojLearn(list).Weights);
+                PerceptronLib.Vector w = principalComponents[i];
+                List<LearningExample> nextList = new List<LearningExample>();
+                foreach (LearningExample ex in list)
                 {
-                    principalComponents.Add(ojLearn(list).Weights);
-                    PerceptronLib.Vector w = principalComponents[i];
-                    List<LearningExample> nextList = new List<LearningExample>();
-                    foreach (LearningExample ex in list)
-                    {
-                        PerceptronLib.Vector x = ex.Example;
-                        double val = w * w;
-                        double activation = w * x;
-                        PerceptronLib.Vector nextExVector = new PerceptronLib.Vector(dimension);
-                        nextExVector = x - w * (activation / val);
-                        nextExVector.normalizeWeights();
-                        LearningExample nextEx = new LearningExample(nextExVector, 0);
-                        nextList.Add(nextEx);
-                    }
-                    list = nextList;
-
+                    PerceptronLib.Vector x = ex.Example;
+                    double val = w * w;
+                    double activation = w * x;
+                    PerceptronLib.Vector nextExVector = new PerceptronLib.Vector(dimension);
+                    nextExVector = x - w * (activation / val);
+                    nextExVector.normalizeWeights();
+                    LearningExample nextEx = new LearningExample(nextExVector, 0);
+                    nextList.Add(nextEx);
                 }
-            }
-            catch (Exception ex)
-            {
-                //printLine(ex.Message + " [ " + ex.StackTrace + " ]");
+                list = nextList;
+
             }
         }
 
@@ -61,65 +54,47 @@ namespace FaceRecognitionLibrary
         /// </summary>
         private Perceptron ojLearn(List<LearningExample> exampleList)
         {
-#if DEBUG
-            //Console.WriteLine("Algorytm Oja: początek");
-#endif
-
             Random r = new Random();
             double eta = 0.5;
             PerceptronLib.Vector w = (new Perceptron(exampleList[0].Example.Dimension)).Weights;
             w.normalizeWeights();
-            //printVectorLength(perceptron.Weights);
 
             for (int i = 0; i < ojIterations; i++)
             {
-#if DEBUG
-                //if (i % 10 == 0)
-                //    printLine("Oj: i = " + i);
-                //Console.WriteLine("Algorytm Oja: Wektor: " + w + " długość: " + w.Length);
-                //Console.WriteLine("Algorytm Oja: <W,W> = " + w * w);
-#endif
                 // Losuje następny przykład uczący
                 LearningExample ex = exampleList[r.Next(exampleList.Count)];
                 PerceptronLib.Vector x = ex.Example;
-#if DEBUG
-                //Console.WriteLine("Algorytm Oja: Wybrany przykład: " + x);
-#endif
                 double activation = w * x;
-#if DEBUG
-                //Console.WriteLine("Algorytm Oja: Aktywacja: " + activation);
-                //Console.WriteLine("Algorytm Oja: yW = " + activation * w);
-                //Console.WriteLine("Algorytm Oja: <(X - yW), W> = " + (x - activation * w)
-                //    * w);
-#endif
-
-                //printLine("act: " + activation);
-                //for (int j = 0; j < perceptron.Dimension; j++)
-                //{
-                //    perceptron.Weights[j] += eta * activation * (ex.Example[j]
-                //        - activation * perceptron.Weights[j]);
-                //}
                 w += eta * activation * (x - activation * w);
-                //perceptron = new Perceptron(w);
+            }
+            return new Perceptron(w);
+        }
 
-                // Normalizuje długość wektora do 1
-                //perceptron.Weights.normalizeWeights();
-#if DEBUG
-
-                //Console.WriteLine("Algorytm Oja: " + "wektor główny: "  + w);
-#endif
+        private void checkDimensions(IEnumerable<IEnumerable<double>> examples,
+            IEnumerable<IUserInfo> userInfoList)
+        {
+            if (examples.Count() == 0)
+            {
+                throw new DimensionException("Liczba przykłóadów musi być większa od 0");
             }
 
-#if DEBUG
-            //Console.WriteLine("Algorytm Oja: koniec");
-#endif
-            return new Perceptron(w);
+            if (userInfoList.Count() != examples.Count())
+            {
+                throw new DimensionException("Niezgodna liczba elementów w "
+                    + "liście użytkowników i liście przykładów");
+            }
+
+            int dim = examples.First().Count();
+            foreach (IEnumerable<double> ex in examples)
+            {
+                if (ex.Count() != dim)
+                    throw new DimensionException("Niezgodne wymiary wektorów wejściowych");
+            }
         }
 
         // TODO: 
         // Do zmiany: należy zastosować profesjonalny schemat bazy danych zamiast zwykłej
         // serializacji
-        // Dodać sprawdzanie równości wymiarów przykładów wejściowych i wektorów głównych
         /// <summary>
         /// Buduje bazę danych
         /// </summary>
@@ -132,7 +107,21 @@ namespace FaceRecognitionLibrary
         private void builDataBase(List<IUserInfo> userInfoList,
             List<LearningExample> examples)
         {
-            FileStream stream = new System.IO.FileStream(dataBaseFileName, FileMode.Create, System.IO.FileAccess.Write);
+            FileStream stream = null;
+            try
+            {
+                stream = new System.IO.FileStream(dataBaseFileName, FileMode.Create, System.IO.FileAccess.Write);
+                if (stream == null)
+                {
+                    throw new FileException("Nie można utworzyć bazy pliku bazy danych");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new FileException("Błąd tworzenia pliku bazy danych. Patrz wyjątek wewnętrzny",
+                    ex);
+            }
+
             EigenFacesDB db = new EigenFacesDB(principalComponents);
             BinaryFormatter formatter = new BinaryFormatter();
 
@@ -142,7 +131,7 @@ namespace FaceRecognitionLibrary
                 LearningExample ex = examples[l];
 
                 // Tworzy nowy element bazy danych
-                EigenNode node = new EigenNode(userInfoList[l].Login);
+                EigenNode node = new EigenNode(userInfoList[l]);
 
                 for (int k = 0; k < outputDimension; k++)
                 {
@@ -153,14 +142,21 @@ namespace FaceRecognitionLibrary
 
                 }
 
-                db.add(node);
+                db.Add(node);
             }
 
-            formatter.Serialize(stream, db);
+            try
+            {
+                formatter.Serialize(stream, db);
+            }
+            catch (Exception ex)
+            {
+                throw new FaceRecognitionEngineException(
+                    "Nie można zserializować bazy danych. Patrz wyjątek wewnętrzny", ex);
+            }
             stream.Close();
 
             dataBase = db;
-            dataBaseCreated = true;
         }
 
         private void loadDataBase(string fileName)
@@ -173,6 +169,10 @@ namespace FaceRecognitionLibrary
 
                 principalComponents = db.EigenVectors;
                 dataBase = db;
+            }
+            else
+            {
+                throw new FileException("Plik bazy danych nie istnieje");
             }
         }
     }

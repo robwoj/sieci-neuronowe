@@ -55,6 +55,7 @@ namespace PerceptronLib
         public Vector(IEnumerable<double> v)
         {
             dimension = v.Count();
+            if (dimension == 1) throw new Exception("AAA");
             array = new double[dimension];
             int i = 0;
             foreach (double d in v)
@@ -62,6 +63,11 @@ namespace PerceptronLib
                 array[i] = d;
                 i++;
             }
+        }
+
+        internal virtual double[] ToArray()
+        {
+            return array;
         }
 
         /// <summary>
@@ -336,13 +342,60 @@ namespace PerceptronLib
 
         public IEnumerator<double> GetEnumerator()
         {
-            List<double> array = new List<double>();
-            return array.GetEnumerator();
+            VectorEnumerator ve = new VectorEnumerator(array);
+            return ve;
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return array.GetEnumerator();
+        }
+    }
+
+    public class VectorEnumerator : IEnumerator<double>
+    {
+        private int current;
+        double[] array;
+        public VectorEnumerator(double[] arr)
+        {
+            current = 0;
+            array = arr;
+        }
+
+        public double Current
+        {
+            get
+            {
+                return array[current];
+            }
+        }
+
+        public void Dispose()
+        {
+            
+        }
+
+        object IEnumerator.Current
+        {
+            get { return Current; }
+        }
+
+        public bool MoveNext()
+        {
+            if (current + 1 < array.Length)
+            {
+                current++;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public void Reset()
+        {
+            current = 0;
         }
     }
 }

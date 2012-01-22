@@ -58,8 +58,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CreateLearningExamples.cs" />
-    <Compile Include="Reduction.cs" />
-    <Compile Include="SaveImages.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

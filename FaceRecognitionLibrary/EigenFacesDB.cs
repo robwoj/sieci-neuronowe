@@ -5,9 +5,6 @@ using System.Text;
 using PerceptronLib;
 using System.Runtime.Serialization;
 
-// TODO:
-// Dodać inne niż string pole w klasie EigenNode
-
 
 namespace FaceRecognitionLibrary
 {
@@ -15,7 +12,7 @@ namespace FaceRecognitionLibrary
     /// Klasa reprezentująca bazę obrazów zapamiętanych za pomocą eigenfaces
     /// </summary>
     [Serializable]
-    public class EigenFacesDB
+    internal class EigenFacesDB
     {
 
         /// <summary>
@@ -50,7 +47,7 @@ namespace FaceRecognitionLibrary
         /// <param name="node">
         /// Element dodawany
         /// </param>
-        public void add(EigenNode node)
+        public void Add(EigenNode node)
         {
 
             // Sprawdza zgodność wymiarów
@@ -83,6 +80,11 @@ namespace FaceRecognitionLibrary
         /// </summary>
         public EigenFacesDB(List<Vector> eigenVs)
         {
+            if (eigenVs == null || eigenVs.Count == 0)
+            {
+                throw new DimensionException("Zbiór wektorów wejściowych jest pust");
+            }
+
             dataBase = new List<EigenNode>();
             eigenVectors = new List<Vector>();
             for (int i = 0; i < eigenVs.Count; i++)
@@ -104,10 +106,6 @@ namespace FaceRecognitionLibrary
             }
         }
 
-
-        // TODO:
-        // Zmienić na internal
-
         /// <summary>
         /// Zwraca najbliższą twarz w bazie
         /// </summary>
@@ -117,7 +115,7 @@ namespace FaceRecognitionLibrary
         /// <returns>
         /// Nazwa skojarzona ze znalezionym obrazem
         /// </returns>
-        public string compareFace(Vector face)
+        internal IUserInfo compareFace(Vector face)
         {
             face.normalizeWeights();
 
@@ -137,44 +135,37 @@ namespace FaceRecognitionLibrary
 
             double min = -1;
             EigenNode minNode = null;
-            try
+            foreach (EigenNode node in dataBase)
             {
-                foreach (EigenNode node in dataBase)
+                Vector w = new Vector(face.Dimension);
+
+                for (int j = 0; j < dimension; j++)
                 {
-                    Vector w = new Vector(face.Dimension);
+                    w += eigenVectors[j] * (node.Coordinates[j] / values[j]);
+                }
 
-                    for (int j = 0; j < dimension; j++)
-                    {
-                        w += eigenVectors[j] * (node.Coordinates[j] / values[j]);
-                    }
+                Vector sum = w - v;
+                double diff = sum * sum;
 
-                    Vector sum = w - v;
-                    double diff = sum * sum;
-
-                    if (min == -1)
+                if (min == -1)
+                {
+                    min = diff;
+                    minNode = node;
+                }
+                else
+                {
+                    if (min > diff)
                     {
                         min = diff;
                         minNode = node;
                     }
-                    else
-                    {
-                        if (min > diff)
-                        {
-                            min = diff;
-                            minNode = node;
-                        }
-                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                return ex.Message + " [ " + ex.StackTrace + " ]";
             }
 
             if (minNode != null)
-                return minNode.Name;
-
-            return string.Empty;
+                return minNode.UserInfo;
+            else
+                return null;
         }
     }
 
@@ -189,14 +180,14 @@ namespace FaceRecognitionLibrary
         /// <summary>
         /// Nazwa obrazu
         /// </summary>
-        public string Name { get; set; }
+        public IUserInfo UserInfo { get; set; }
 
         /// <summary>
         /// Tworzy nowy element
         /// </summary>
-        public EigenNode(string name)
+        public EigenNode(IUserInfo userInfo)
         {
-            Name = name;
+            UserInfo = userInfo;
             Coordinates = new List<double>();
         }
     }
